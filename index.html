@@ -109,13 +109,16 @@
             background-size: 300% 200%;
             border: 2px solid rgba(255, 179, 217, 0.3);
             border-radius: 8px;
-            cursor: grab;
+            cursor: pointer;
             touch-action: none;
+            user-select: none;
+            transition: transform 0.1s, box-shadow 0.1s;
         }
 
-        .puzzle-piece.dragging {
-            opacity: 0.5;
-            cursor: grabbing;
+        .puzzle-piece.selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 179, 217, 0.8);
+            border-color: #ffb3d9;
         }
 
         .puzzle-message {
@@ -125,6 +128,7 @@
             color: #ffd1e8;
             margin: 20px 0;
             display: none;
+            animation: fadeIn 0.8s;
         }
 
         /* Code secret */
@@ -406,7 +410,7 @@
             <h2>Épreuve 1 : Reconstitue notre photo</h2>
             <div class="puzzle-container">
                 <div class="puzzle-grid" id="puzzleGrid"></div>
-                <p class="instruction">Glisse les pièces pour reconstituer l'image</p>
+                <p class="instruction">Touche deux pièces pour les échanger</p>
                 <div class="puzzle-message" id="puzzleMessage">
                     Ce soir-là… le 16 décembre 2023 💫<br>
                     Tout semblait parfait.
@@ -491,98 +495,105 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        // ÉPREUVE 1: PUZZLE
+        // ÉPREUVE 1: PUZZLE - NOUVELLE VERSION SIMPLIFIÉE
         const puzzleGrid = document.getElementById('puzzleGrid');
         const puzzleMessage = document.getElementById('puzzleMessage');
         const puzzleBtn = document.getElementById('puzzleBtn');
         
         let pieces = [];
-        let draggedPiece = null;
-        let touchStartPos = null;
+        let selectedPiece = null;
 
         function initPuzzle() {
             const positions = [0, 1, 2, 3, 4, 5];
             const shuffled = positions.sort(() => Math.random() - 0.5);
             
-            shuffled.forEach((pos, index) => {
+            shuffled.forEach((correctPos, currentIndex) => {
                 const piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                piece.dataset.correct = pos;
-                piece.dataset.current = index;
+                piece.dataset.correct = correctPos;
+                piece.dataset.current = currentIndex;
                 
-                const col = pos % 3;
-                const row = Math.floor(pos / 3);
-                piece.style.backgroundImage = 'url(photo.jpeg)';
+                const col = correctPos % 3;
+                const row = Math.floor(correctPos / 3);
+                piece.style.backgroundImage = 'url(photo.jpg)';
                 piece.style.backgroundPosition = `${col * 50}% ${row * 100}%`;
                 
-                // Touch events
-                piece.addEventListener('touchstart', handleTouchStart);
-                piece.addEventListener('touchmove', handleTouchMove);
-                piece.addEventListener('touchend', handleTouchEnd);
+                // Système de sélection simple : toucher 2 pièces pour les échanger
+                piece.addEventListener('click', handlePieceClick);
+                piece.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    handlePieceClick.call(this, e);
+                });
                 
                 puzzleGrid.appendChild(piece);
                 pieces.push(piece);
             });
         }
 
-        function handleTouchStart(e) {
-            draggedPiece = e.target;
-            draggedPiece.classList.add('dragging');
-            touchStartPos = {
-                x: e.touches[0].clientX,
-                y: e.touches[0].clientY,
-                element: draggedPiece
-            };
-        }
-
-        function handleTouchMove(e) {
+        function handlePieceClick(e) {
             e.preventDefault();
-            if (!draggedPiece) return;
             
-            const touch = e.touches[0];
-            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
-            
-            if (elementBelow && elementBelow.classList.contains('puzzle-piece') && elementBelow !== draggedPiece) {
-                swapPieces(draggedPiece, elementBelow);
+            if (!selectedPiece) {
+                // Première pièce sélectionnée
+                selectedPiece = this;
+                this.classList.add('selected');
+            } else if (selectedPiece === this) {
+                // Désélectionner si on clique sur la même pièce
+                selectedPiece.classList.remove('selected');
+                selectedPiece = null;
+            } else {
+                // Deuxième pièce : échanger
+                swapPieces(selectedPiece, this);
+                selectedPiece.classList.remove('selected');
+                selectedPiece = null;
+                
+                // Vérifier si le puzzle est résolu
+                setTimeout(checkPuzzleComplete, 300);
             }
-        }
-
-        function handleTouchEnd(e) {
-            if (draggedPiece) {
-                draggedPiece.classList.remove('dragging');
-                draggedPiece = null;
-            }
-            checkPuzzleComplete();
         }
 
         function swapPieces(piece1, piece2) {
-            const temp = piece1.dataset.current;
+            // Échanger visuellement dans le DOM
+            const parent = puzzleGrid;
+            const allPieces = Array.from(parent.children);
+            const index1 = allPieces.indexOf(piece1);
+            const index2 = allPieces.indexOf(piece2);
+            
+            // Échanger les positions dans le dataset
+            const tempCurrent = piece1.dataset.current;
             piece1.dataset.current = piece2.dataset.current;
-            piece2.dataset.current = temp;
+            piece2.dataset.current = tempCurrent;
             
-            const parent = piece1.parentNode;
-            const index1 = Array.from(parent.children).indexOf(piece1);
-            const index2 = Array.from(parent.children).indexOf(piece2);
-            
+            // Échanger dans le DOM
             if (index1 < index2) {
                 parent.insertBefore(piece2, piece1);
-                parent.insertBefore(piece1, parent.children[index2]);
+                parent.insertBefore(piece1, allPieces[index2]);
             } else {
                 parent.insertBefore(piece1, piece2);
-                parent.insertBefore(piece2, parent.children[index1]);
+                parent.insertBefore(piece2, allPieces[index1]);
             }
         }
 
         function checkPuzzleComplete() {
-            const allCorrect = pieces.every((piece, index) => {
+            const currentPieces = Array.from(puzzleGrid.children);
+            const isComplete = currentPieces.every((piece, index) => {
                 return parseInt(piece.dataset.correct) === index;
             });
             
-            if (allCorrect) {
+            console.log('Puzzle complet ?', isComplete); // Debug
+            
+            if (isComplete) {
+                // Animation de succès
+                currentPieces.forEach((piece, i) => {
+                    setTimeout(() => {
+                        piece.style.border = '2px solid #90EE90';
+                    }, i * 100);
+                });
+                
                 setTimeout(() => {
                     puzzleMessage.style.display = 'block';
                     puzzleBtn.style.display = 'block';
-                }, 500);
+                }, 800);
             }
         }
 
