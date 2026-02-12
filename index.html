@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select-none">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Le Coffre à Souvenirs - Pour Moon ❤️</title>
     <style>
         * {
@@ -14,14 +14,14 @@
 
         body {
             font-family: 'Georgia', serif;
-            background: linear-gradient(to bottom, #0a0e27 0%, #1a1a3e 50%, #2d1b3d 100%);
-            color: #fff;
-            min-height: 100vh;
+            background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
+            color: #ffffff;
             overflow-x: hidden;
+            min-height: 100vh;
             position: relative;
         }
 
-        /* Étoiles en arrière-plan */
+        /* Animation d'étoiles de fond */
         .stars {
             position: fixed;
             top: 0;
@@ -34,6 +34,8 @@
 
         .star {
             position: absolute;
+            width: 2px;
+            height: 2px;
             background: white;
             border-radius: 50%;
             animation: twinkle 3s infinite;
@@ -49,22 +51,24 @@
             position: relative;
             z-index: 1;
             padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
         }
 
-        /* Sections */
-        .section {
+        .screen {
             display: none;
-            animation: fadeIn 0.8s ease-in;
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 0.6s ease-in;
         }
 
-        .section.active {
-            display: block;
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         @keyframes fadeIn {
@@ -72,220 +76,230 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Titre */
-        h1 {
+        /* Écran d'accueil */
+        .welcome {
             text-align: center;
-            font-size: 28px;
-            margin-bottom: 30px;
-            color: #ffb3d9;
-            text-shadow: 0 0 10px rgba(255, 179, 217, 0.5);
         }
 
-        h2 {
-            text-align: center;
-            font-size: 20px;
+        .welcome h1 {
+            font-size: 2.5rem;
             margin-bottom: 20px;
-            color: #ffd1e8;
+            background: linear-gradient(45deg, #ff6b9d, #c06c84);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: #ffc2d4;
+            line-height: 1.6;
+        }
+
+        .heart-animation {
+            font-size: 4rem;
+            animation: heartbeat 1.5s infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            50% { transform: scale(1); }
+        }
+
+        /* Boutons */
+        button {
+            background: linear-gradient(135deg, #ff6b9d, #c06c84);
+            border: none;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Georgia', serif;
+            margin-top: 20px;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.4);
         }
 
         /* Puzzle */
         .puzzle-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
+            width: 100%;
+            text-align: center;
         }
 
-        .puzzle-grid {
+        .puzzle-title {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffc2d4;
+        }
+
+        .puzzle-board {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-            aspect-ratio: 3/2;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 20px;
         }
 
         .puzzle-piece {
-            background-size: 300% 200%;
-            border: 3px solid rgba(255, 179, 217, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            touch-action: manipulation;
-            user-select: none;
+            aspect-ratio: 1;
+            background-size: 200% 300%;
+            border-radius: 10px;
+            cursor: move;
+            touch-action: none;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
-            position: relative;
         }
 
-        .puzzle-piece.selected {
-            transform: scale(0.95);
-            border-color: #FFD700;
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
-            z-index: 10;
+        .puzzle-piece.dragging {
+            opacity: 0.5;
+            transform: scale(1.1);
         }
 
         .puzzle-piece.correct {
-            border-color: #90EE90 !important;
-            box-shadow: 0 0 15px rgba(144, 238, 144, 0.6);
+            border-color: #ff6b9d;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
         }
 
         .puzzle-message {
-            text-align: center;
-            font-size: 16px;
-            line-height: 1.6;
-            color: #ffd1e8;
+            font-size: 1.2rem;
+            color: #ffc2d4;
             margin: 20px 0;
-            display: none;
-            animation: fadeIn 0.8s;
+            line-height: 1.6;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .puzzle-message.show {
+            opacity: 1;
         }
 
         /* Code secret */
         .code-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px 20px;
-            backdrop-filter: blur(10px);
+            width: 100%;
             text-align: center;
+        }
+
+        .code-title {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            color: #ffc2d4;
+            line-height: 1.6;
         }
 
         .code-input {
             width: 100%;
             max-width: 300px;
             padding: 15px;
-            font-size: 24px;
+            font-size: 1.5rem;
             text-align: center;
-            border: 2px solid #ffb3d9;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1a1a3e;
-            margin: 20px auto;
-            display: block;
-            letter-spacing: 3px;
+            border: 2px solid #ff6b9d;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .code-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
         }
 
         .code-message {
+            font-size: 1rem;
+            margin-top: 15px;
             min-height: 30px;
-            margin: 15px 0;
-            font-size: 14px;
         }
 
         .code-message.error {
-            color: #ffb3d9;
+            color: #ffc2d4;
         }
 
         .code-message.success {
-            color: #90EE90;
-            animation: pulse 0.5s;
+            color: #4fffb0;
+            animation: glow 1s ease-in-out;
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(79, 255, 176, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(79, 255, 176, 1); }
         }
 
         /* Attrape les étoiles */
-        .catch-stars-container {
-            position: relative;
+        .stars-game-container {
+            width: 100%;
             height: 70vh;
+            position: relative;
+            text-align: center;
+        }
+
+        .stars-game-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #ffc2d4;
+        }
+
+        .stars-counter {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #4fffb0;
+        }
+
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 100%;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
+            border-radius: 20px;
             overflow: hidden;
         }
 
         .catchable-star {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            font-size: 30px;
+            font-size: 2.5rem;
             cursor: pointer;
-            animation: float 3s ease-in-out infinite;
-            transition: transform 0.2s;
+            animation: starFloat 3s ease-in-out infinite;
+            transition: all 0.3s ease;
+            z-index: 10;
         }
 
         .catchable-star:active {
-            transform: scale(1.3);
+            transform: scale(1.3) rotate(180deg);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
+        @keyframes starFloat {
+            0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
         }
 
-        .words-collected {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 18px;
-            min-height: 60px;
+        .collected-words {
             display: flex;
             flex-wrap: wrap;
-            justify-content: center;
             gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
         }
 
-        .word-badge {
-            background: rgba(255, 179, 217, 0.3);
-            padding: 8px 15px;
+        .word-chip {
+            background: linear-gradient(135deg, #ff6b9d, #c06c84);
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 14px;
-            animation: popIn 0.3s;
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        /* Coffre */
-        .chest-container {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .chest {
-            width: 200px;
-            height: 150px;
-            margin: 0 auto 30px;
-            position: relative;
-            animation: chestOpen 2s ease-out forwards;
-        }
-
-        .chest-lid {
-            width: 200px;
-            height: 60px;
-            background: linear-gradient(to bottom, #8B4513 0%, #654321 100%);
-            border-radius: 10px 10px 0 0;
-            border: 3px solid #FFD700;
-            position: relative;
-            transform-origin: bottom;
-            animation: lidOpen 1.5s ease-out 0.5s forwards;
-        }
-
-        .chest-body {
-            width: 200px;
-            height: 90px;
-            background: linear-gradient(to bottom, #654321 0%, #4a2f1a 100%);
-            border-radius: 0 0 10px 10px;
-            border: 3px solid #FFD700;
-            position: relative;
-        }
-
-        .chest-lock {
-            width: 30px;
-            height: 30px;
-            background: #FFD700;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes lidOpen {
-            to { transform: rotateX(-120deg); }
+            font-size: 0.9rem;
+            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.4);
         }
 
         /* Scène finale */
-        .final-scene {
+        .final-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -294,14 +308,14 @@
             z-index: 1000;
         }
 
-        .final-video {
+        .video-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: brightness(0.4);
+            z-index: 1;
         }
 
         .final-overlay {
@@ -310,432 +324,531 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 14, 39, 0.7);
+            background: rgba(10, 14, 39, 0.85);
+            z-index: 2;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 30px;
             overflow-y: auto;
         }
 
+        .chest-animation {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            animation: chestOpen 2s ease-out forwards;
+        }
+
+        @keyframes chestOpen {
+            0% { transform: scale(0.5) rotateY(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotateY(180deg); }
+            100% { transform: scale(1) rotateY(360deg); opacity: 1; }
+        }
+
         .final-message {
             max-width: 500px;
-            font-size: 16px;
-            line-height: 1.8;
             text-align: center;
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #ffc2d4;
             margin-bottom: 30px;
+        }
+
+        .final-message h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #ff6b9d, #c06c84);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .typewriter {
             overflow: hidden;
             white-space: pre-wrap;
+            opacity: 0;
         }
 
-        /* Boutons */
-        .btn {
-            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
-            color: white;
+        .typewriter.typing {
+            opacity: 1;
+        }
+
+        .music-button {
+            background: linear-gradient(135deg, #ff6b9d, #c06c84);
             border: none;
+            color: white;
             padding: 15px 40px;
-            font-size: 18px;
-            border-radius: 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
             cursor: pointer;
-            display: block;
-            margin: 20px auto;
-            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
-            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
             font-family: 'Georgia', serif;
         }
 
-        .btn:active {
+        .music-button:active {
             transform: scale(0.95);
-            box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
         }
 
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Animations étoiles finales */
         .floating-hearts {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+            position: fixed;
             top: 0;
             left: 0;
+            width: 100%;
+            height: 100%;
             pointer-events: none;
-            overflow: hidden;
+            z-index: 999;
         }
 
-        .heart {
+        .floating-heart {
             position: absolute;
-            font-size: 20px;
-            animation: floatUp 4s linear infinite;
+            font-size: 2rem;
+            animation: floatUp 4s ease-in forwards;
+            opacity: 0;
         }
 
         @keyframes floatUp {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
+            0% { 
+                transform: translateY(0) scale(0);
                 opacity: 1;
             }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
+            100% { 
+                transform: translateY(-100vh) scale(1);
                 opacity: 0;
             }
         }
 
-        /* Instructions */
-        .instruction {
+        /* Loading animation */
+        .loading {
             text-align: center;
-            font-size: 14px;
-            color: #ffd1e8;
-            margin: 10px 0;
-            opacity: 0.8;
+            font-size: 1.5rem;
+            color: #ffc2d4;
         }
 
-        .progress {
-            text-align: center;
-            font-size: 16px;
-            color: #ffb3d9;
-            margin: 15px 0;
-            font-weight: bold;
+        .loading-dots::after {
+            content: '.';
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
     </style>
 </head>
 <body>
-    <!-- Étoiles d'arrière-plan -->
+    <!-- Étoiles de fond -->
     <div class="stars" id="backgroundStars"></div>
 
+    <!-- Container principal -->
     <div class="container">
-        <!-- ÉPREUVE 1: Puzzle -->
-        <div class="section active" id="puzzle-section">
-            <h1>Le Coffre à Souvenirs 💫</h1>
-            <h2>Épreuve 1 : Reconstitue notre photo</h2>
+        <!-- Écran d'accueil -->
+        <div class="screen active" id="welcomeScreen">
+            <div class="welcome">
+                <div class="heart-animation">💝</div>
+                <h1>Le Coffre à Souvenirs</h1>
+                <p>Pour Moon ❤️</p>
+                <p>Une expérience spéciale créée avec amour...</p>
+                <button onclick="startJourney()">Commencer l'aventure ✨</button>
+            </div>
+        </div>
+
+        <!-- Épreuve 1 : Puzzle -->
+        <div class="screen" id="puzzleScreen">
             <div class="puzzle-container">
-                <div class="puzzle-grid" id="puzzleGrid"></div>
-                <p class="instruction">Touche deux pièces pour les échanger</p>
+                <h2 class="puzzle-title">🧩 Reconstitue notre photo</h2>
+                <div class="puzzle-board" id="puzzleBoard"></div>
                 <div class="puzzle-message" id="puzzleMessage">
-                    Ce soir-là… le 16 décembre 2023 💫<br>
-                    Tout semblait parfait.
+                    Ce soir-là… le 16 décembre 2023 💫<br>Tout semblait parfait.
                 </div>
-                <button class="btn" id="puzzleBtn" style="display:none;">Continuer ✨</button>
+                <button id="puzzleContinue" style="display: none;" onclick="nextScreen('codeScreen')">Continuer</button>
             </div>
         </div>
 
-        <!-- ÉPREUVE 2: Code secret -->
-        <div class="section" id="code-section">
-            <h1>Le Coffre à Souvenirs 💫</h1>
-            <h2>Épreuve 2 : Le Code Secret</h2>
+        <!-- Épreuve 2 : Code secret -->
+        <div class="screen" id="codeScreen">
             <div class="code-container">
-                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
-                    Entre la date d'un soir que je n'ai jamais oublié…
-                </p>
-                <input type="number" class="code-input" id="codeInput" placeholder="JJMMAAAA" maxlength="8">
+                <h2 class="code-title">🔐 Entre la date d'un soir que je n'ai jamais oublié…</h2>
+                <input 
+                    type="number" 
+                    class="code-input" 
+                    id="codeInput" 
+                    placeholder="JJMMAAAA"
+                    maxlength="8"
+                >
+                <button onclick="checkCode()">Valider</button>
                 <div class="code-message" id="codeMessage"></div>
-                <button class="btn" id="codeBtn">Valider 💝</button>
             </div>
         </div>
 
-        <!-- ÉPREUVE 3: Attrape les étoiles -->
-        <div class="section" id="stars-section">
-            <h1>Le Coffre à Souvenirs 💫</h1>
-            <h2>Épreuve 3 : Attrape les Étoiles</h2>
-            <p class="progress" id="starsProgress">0 / 6 étoiles attrapées</p>
-            <div class="words-collected" id="wordsCollected"></div>
-            <div class="catch-stars-container" id="catchStarsContainer"></div>
-        </div>
-
-        <!-- SCÈNE DU COFFRE -->
-        <div class="section" id="chest-section">
-            <h1>Le Coffre à Souvenirs 💫</h1>
-            <div class="chest-container">
-                <div class="chest">
-                    <div class="chest-lid">
-                        <div class="chest-lock"></div>
-                    </div>
-                    <div class="chest-body"></div>
-                </div>
+        <!-- Épreuve 3 : Attrape les étoiles -->
+        <div class="screen" id="starsGameScreen">
+            <div class="stars-game-container">
+                <h2 class="stars-game-title">⭐ Attrape les étoiles</h2>
+                <div class="stars-counter" id="starsCounter">Étoiles attrapées : 0/6</div>
+                <div class="game-area" id="gameArea"></div>
+                <div class="collected-words" id="collectedWords"></div>
             </div>
         </div>
     </div>
 
-    <!-- SCÈNE FINALE -->
-    <div class="final-scene" id="finalScene" style="display:none;">
-        <video class="final-video" id="finalVideo" loop muted playsinline>
-            <source src="video.mp4" type="video/mp4">
-        </video>
-        <div class="final-overlay">
-            <div class="final-message typewriter" id="finalMessage"></div>
-            <button class="btn" id="musicBtn">💗 Lancer notre musique</button>
-        </div>
-        <div class="floating-hearts" id="floatingHearts"></div>
-    </div>
-
-    <audio id="musicPlayer" loop>
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
+    <!-- Floating hearts container -->
+    <div class="floating-hearts" id="floatingHearts"></div>
 
     <script>
-        // Création des étoiles d'arrière-plan
+        // Configuration
+        const CORRECT_CODE = '16122023';
+        const STAR_WORDS = ['Distance', 'Temps', 'Manque', 'Souvenirs', 'Espoir', 'Nous'];
+        let collectedStars = 0;
+        let currentScreen = 'welcomeScreen';
+
+        // Générer les étoiles de fond
         function createBackgroundStars() {
             const starsContainer = document.getElementById('backgroundStars');
             for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
                 star.style.animationDelay = Math.random() * 3 + 's';
                 starsContainer.appendChild(star);
             }
         }
-        createBackgroundStars();
 
-        // Navigation entre sections
-        function showSection(sectionId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
+        // Navigation entre les écrans
+        function nextScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            currentScreen = screenId;
         }
 
-        // ÉPREUVE 1: PUZZLE - VERSION CORRIGÉE
-        const puzzleGrid = document.getElementById('puzzleGrid');
-        const puzzleMessage = document.getElementById('puzzleMessage');
-        const puzzleBtn = document.getElementById('puzzleBtn');
-        
+        // Démarrer l'aventure
+        function startJourney() {
+            nextScreen('puzzleScreen');
+            initPuzzle();
+        }
+
+        // ÉPREUVE 1 : PUZZLE
         let puzzleState = [];
-        let selectedIndex = null;
+        let draggedElement = null;
+        let touchStartPos = { x: 0, y: 0 };
 
         function initPuzzle() {
-            // Créer un ordre mélangé
+            const board = document.getElementById('puzzleBoard');
+            board.innerHTML = '';
             puzzleState = [0, 1, 2, 3, 4, 5];
             
-            // Mélanger
+            // Mélanger les pièces
             for (let i = puzzleState.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [puzzleState[i], puzzleState[j]] = [puzzleState[j], puzzleState[i]];
             }
-            
-            renderPuzzle();
-        }
 
-        function renderPuzzle() {
-            puzzleGrid.innerHTML = '';
-            
-            puzzleState.forEach((correctPosition, currentIndex) => {
+            // Créer les pièces du puzzle
+            puzzleState.forEach((pieceId, index) => {
                 const piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                piece.dataset.index = currentIndex;
+                piece.dataset.id = pieceId;
+                piece.dataset.currentPosition = index;
                 
-                // Position de l'image
-                const col = correctPosition % 3;
-                const row = Math.floor(correctPosition / 3);
+                // Position de la pièce dans l'image originale
+                const row = Math.floor(pieceId / 2);
+                const col = pieceId % 2;
                 piece.style.backgroundImage = 'url(photo.jpeg)';
-                piece.style.backgroundPosition = `${col * 50}% ${row * 100}%`;
-                
-                // Gérer les clics/touches
-                piece.addEventListener('click', () => handlePieceClick(currentIndex));
-                piece.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    handlePieceClick(currentIndex);
-                });
-                
-                puzzleGrid.appendChild(piece);
+                piece.style.backgroundPosition = `${col * 100}% ${row * 33.33}%`;
+
+                // Events tactiles
+                piece.addEventListener('touchstart', handleTouchStart, { passive: false });
+                piece.addEventListener('touchmove', handleTouchMove, { passive: false });
+                piece.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+                board.appendChild(piece);
             });
         }
 
-        function handlePieceClick(index) {
-            const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
-            
-            if (selectedIndex === null) {
-                // Sélectionner la première pièce
-                selectedIndex = index;
-                pieces[index].classList.add('selected');
-            } else if (selectedIndex === index) {
-                // Déselectionner si on clique sur la même
-                pieces[index].classList.remove('selected');
-                selectedIndex = null;
-            } else {
-                // Échanger les deux pièces
-                pieces[selectedIndex].classList.remove('selected');
-                
-                // Échanger dans l'état
-                [puzzleState[selectedIndex], puzzleState[index]] = [puzzleState[index], puzzleState[selectedIndex]];
-                
-                selectedIndex = null;
-                
-                // Re-render
-                renderPuzzle();
-                
-                // Vérifier si résolu
-                setTimeout(checkPuzzleComplete, 300);
+        function handleTouchStart(e) {
+            e.preventDefault();
+            draggedElement = e.target;
+            draggedElement.classList.add('dragging');
+            const touch = e.touches[0];
+            touchStartPos = { x: touch.clientX, y: touch.clientY };
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            if (!draggedElement) return;
+
+            draggedElement.classList.remove('dragging');
+            const touch = e.changedTouches[0];
+            const endElement = document.elementFromPoint(touch.clientX, touch.clientY);
+
+            if (endElement && endElement.classList.contains('puzzle-piece') && endElement !== draggedElement) {
+                swapPieces(draggedElement, endElement);
             }
+
+            draggedElement = null;
+        }
+
+        function swapPieces(piece1, piece2) {
+            const pos1 = parseInt(piece1.dataset.currentPosition);
+            const pos2 = parseInt(piece2.dataset.currentPosition);
+
+            // Échanger visuellement
+            const parent = piece1.parentNode;
+            const pieces = Array.from(parent.children);
+            
+            if (pos1 < pos2) {
+                parent.insertBefore(piece2, piece1);
+                parent.insertBefore(piece1, pieces[pos2]);
+            } else {
+                parent.insertBefore(piece1, piece2);
+                parent.insertBefore(piece2, pieces[pos1]);
+            }
+
+            // Mettre à jour les positions
+            piece1.dataset.currentPosition = pos2;
+            piece2.dataset.currentPosition = pos1;
+
+            checkPuzzleComplete();
         }
 
         function checkPuzzleComplete() {
-            const isComplete = puzzleState.every((value, index) => value === index);
-            
+            const pieces = document.querySelectorAll('.puzzle-piece');
+            let isComplete = true;
+
+            pieces.forEach(piece => {
+                const id = parseInt(piece.dataset.id);
+                const pos = parseInt(piece.dataset.currentPosition);
+                
+                if (id === pos) {
+                    piece.classList.add('correct');
+                } else {
+                    piece.classList.remove('correct');
+                    isComplete = false;
+                }
+            });
+
             if (isComplete) {
-                const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
-                pieces.forEach((piece, i) => {
-                    setTimeout(() => {
-                        piece.classList.add('correct');
-                    }, i * 100);
-                });
+                setTimeout(() => {
+                    document.getElementById('puzzleMessage').classList.add('show');
+                    document.getElementById('puzzleContinue').style.display = 'block';
+                }, 500);
+            }
+        }
+
+        // ÉPREUVE 2 : CODE SECRET
+        function checkCode() {
+            const input = document.getElementById('codeInput');
+            const message = document.getElementById('codeMessage');
+            const code = input.value;
+
+            if (code === CORRECT_CODE) {
+                message.textContent = '✨ Parfait ! Cette date restera gravée pour toujours...';
+                message.className = 'code-message success';
                 
                 setTimeout(() => {
-                    puzzleMessage.style.display = 'block';
-                    puzzleBtn.style.display = 'block';
-                }, 800);
-            }
-        }
-
-        initPuzzle();
-
-        puzzleBtn.addEventListener('click', () => {
-            showSection('code-section');
-        });
-
-        // ÉPREUVE 2: CODE SECRET
-        const codeInput = document.getElementById('codeInput');
-        const codeMessage = document.getElementById('codeMessage');
-        const codeBtn = document.getElementById('codeBtn');
-
-        codeBtn.addEventListener('click', () => {
-            const code = codeInput.value;
-            if (code === '16122023') {
-                codeMessage.textContent = '✨ Parfait ! Le coffre s\'ouvre peu à peu...';
-                codeMessage.className = 'code-message success';
-                setTimeout(() => {
-                    showSection('stars-section');
-                    initCatchStars();
-                }, 1500);
+                    nextScreen('starsGameScreen');
+                    initStarsGame();
+                }, 2000);
             } else {
-                codeMessage.textContent = '💫 Concentre-toi... Cette date est gravée dans mon cœur.';
-                codeMessage.className = 'code-message error';
-                codeInput.value = '';
+                message.textContent = '💫 Réfléchis bien... c\'est une date très spéciale pour nous deux.';
+                message.className = 'code-message error';
+                input.value = '';
             }
-        });
-
-        // ÉPREUVE 3: ATTRAPE LES ÉTOILES
-        const catchStarsContainer = document.getElementById('catchStarsContainer');
-        const wordsCollected = document.getElementById('wordsCollected');
-        const starsProgress = document.getElementById('starsProgress');
-        
-        const words = ['Distance', 'Temps', 'Manque', 'Souvenirs', 'Espoir', 'Nous'];
-        let collectedWords = [];
-
-        function initCatchStars() {
-            words.forEach((word, index) => {
-                setTimeout(() => createCatchableStar(word), index * 800);
-            });
         }
 
-        function createCatchableStar(word) {
-            if (collectedWords.includes(word)) return;
-            
+        // ÉPREUVE 3 : ATTRAPE LES ÉTOILES
+        function initStarsGame() {
+            collectedStars = 0;
+            updateStarsCounter();
+            spawnStar();
+        }
+
+        function spawnStar() {
+            if (collectedStars >= 6) return;
+
+            const gameArea = document.getElementById('gameArea');
             const star = document.createElement('div');
             star.className = 'catchable-star';
             star.textContent = '⭐';
-            star.dataset.word = word;
             
-            star.style.left = Math.random() * (catchStarsContainer.offsetWidth - 40) + 'px';
-            star.style.top = Math.random() * (catchStarsContainer.offsetHeight - 40) + 'px';
-            
-            star.addEventListener('click', () => catchStar(star, word));
-            star.addEventListener('touchstart', (e) => {
+            const maxX = gameArea.clientWidth - 60;
+            const maxY = gameArea.clientHeight - 60;
+            star.style.left = Math.random() * maxX + 'px';
+            star.style.top = Math.random() * maxY + 'px';
+            star.dataset.word = STAR_WORDS[collectedStars];
+
+            star.addEventListener('click', catchStar);
+            star.addEventListener('touchstart', function(e) {
                 e.preventDefault();
-                catchStar(star, word);
+                catchStar.call(this);
             });
-            
-            catchStarsContainer.appendChild(star);
+
+            gameArea.appendChild(star);
         }
 
-        function catchStar(starElement, word) {
-            if (collectedWords.includes(word)) return;
-            
-            collectedWords.push(word);
-            starElement.remove();
-            
-            const badge = document.createElement('div');
-            badge.className = 'word-badge';
-            badge.textContent = word;
-            wordsCollected.appendChild(badge);
-            
-            starsProgress.textContent = `${collectedWords.length} / 6 étoiles attrapées`;
-            
-            if (collectedWords.length < 6) {
-                setTimeout(() => createCatchableStar(word), 500);
+        function catchStar() {
+            const word = this.dataset.word;
+            this.style.animation = 'none';
+            this.style.transform = 'scale(2) rotate(360deg)';
+            this.style.opacity = '0';
+
+            setTimeout(() => {
+                this.remove();
+            }, 300);
+
+            collectedStars++;
+            addCollectedWord(word);
+            updateStarsCounter();
+
+            if (collectedStars < 6) {
+                setTimeout(() => spawnStar(), 800);
             } else {
-                setTimeout(() => {
-                    showSection('chest-section');
-                    setTimeout(() => {
-                        showFinalScene();
-                    }, 3000);
-                }, 1000);
+                setTimeout(() => showFinalScene(), 1500);
             }
+        }
+
+        function addCollectedWord(word) {
+            const container = document.getElementById('collectedWords');
+            const chip = document.createElement('div');
+            chip.className = 'word-chip';
+            chip.textContent = word;
+            chip.style.opacity = '0';
+            container.appendChild(chip);
+            
+            setTimeout(() => {
+                chip.style.opacity = '1';
+                chip.style.transition = 'opacity 0.5s ease';
+            }, 100);
+        }
+
+        function updateStarsCounter() {
+            document.getElementById('starsCounter').textContent = `Étoiles attrapées : ${collectedStars}/6`;
         }
 
         // SCÈNE FINALE
         function showFinalScene() {
-            const finalScene = document.getElementById('finalScene');
-            const finalVideo = document.getElementById('finalVideo');
-            const finalMessage = document.getElementById('finalMessage');
-            
-            finalScene.style.display = 'block';
-            finalVideo.play();
-            
-            const message = `Moon ❤️ bonne saint valentin,
+            const finalContainer = document.createElement('div');
+            finalContainer.className = 'final-container';
+            finalContainer.innerHTML = `
+                <video class="video-background" autoplay loop muted playsinline>
+                    <source src="video.mp4" type="video/mp4">
+                </video>
+                <div class="final-overlay">
+                    <div class="chest-animation">💝</div>
+                    <div class="final-message">
+                        <h2>Moon ❤️</h2>
+                        <div class="typewriter" id="finalText"></div>
+                    </div>
+                    <button class="music-button" id="musicButton" style="display: none;" onclick="playMusic()">
+                        💗 Lancer notre musique
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(finalContainer);
 
-Le 16 décembre 2023 reste gravé dans mon cœur comme l'un des plus beaux jours de ma vie. Même si la distance nous sépare aujourd'hui, elle ne change rien à ce que je ressens pour toi. Le temps passe, les kilomètres existent… mais mes sentiments restent les mêmes. Et je sais qu'un jour, on se retrouvera. ❤️ Parce que certaines histoires ne s'arrêtent pas… elles patientent.
-
-— Retro 💫`;
-            
-            typeWriter(message, finalMessage, 30);
+            setTimeout(() => {
+                typeWriter();
+            }, 2000);
         }
 
-        function typeWriter(text, element, speed) {
+        function typeWriter() {
+            const text = `bonne saint valentin,
+
+Le 16 décembre 2023 reste gravé dans mon cœur comme l'un des plus beaux jours de ma vie.
+
+Même si la distance nous sépare aujourd'hui, elle ne change rien à ce que je ressens pour toi.
+
+Le temps passe, les kilomètres existent… mais mes sentiments restent les mêmes.
+
+Et je sais qu'un jour, on se retrouvera. ❤️
+
+Parce que certaines histoires ne s'arrêtent pas… elles patientent.
+
+— Retro 💫`;
+
+            const element = document.getElementById('finalText');
+            element.classList.add('typing');
             let i = 0;
-            element.textContent = '';
+
             function type() {
                 if (i < text.length) {
                     element.textContent += text.charAt(i);
                     i++;
-                    setTimeout(type, speed);
+                    setTimeout(type, 50);
+                } else {
+                    document.getElementById('musicButton').style.display = 'block';
                 }
             }
+
             type();
         }
 
-        // Musique
-        const musicBtn = document.getElementById('musicBtn');
-        const musicPlayer = document.getElementById('musicPlayer');
-        const floatingHearts = document.getElementById('floatingHearts');
+        // Musique et animation finale
+        let audio = null;
 
-        musicBtn.addEventListener('click', () => {
-            musicPlayer.play();
-            musicBtn.textContent = '🎵 Musique en cours...';
-            musicBtn.disabled = true;
-            createFloatingHearts();
+        function playMusic() {
+            if (!audio) {
+                audio = new Audio('music.mp3');
+                audio.loop = true;
+            }
+
+            audio.play().catch(err => {
+                console.log('Lecture audio bloquée:', err);
+            });
+
+            document.getElementById('musicButton').textContent = '🎵 Musique en cours...';
+            startHeartAnimation();
+        }
+
+        function startHeartAnimation() {
+            setInterval(() => {
+                createFloatingHeart();
+            }, 500);
+        }
+
+        function createFloatingHeart() {
+            const container = document.getElementById('floatingHearts');
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.textContent = ['💖', '💗', '💕', '💝'][Math.floor(Math.random() * 4)];
+            heart.style.left = Math.random() * 100 + '%';
+            heart.style.bottom = '-50px';
+            container.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 4000);
+        }
+
+        // Initialisation
+        window.addEventListener('load', () => {
+            createBackgroundStars();
         });
 
-        function createFloatingHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.className = 'heart';
-                heart.textContent = ['💗', '💖', '💝', '💕'][Math.floor(Math.random() * 4)];
-                heart.style.left = Math.random() * 100 + '%';
-                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
-                heart.style.animationDelay = Math.random() * 2 + 's';
-                floatingHearts.appendChild(heart);
-                
-                setTimeout(() => heart.remove(), 6000);
-            }, 300);
-        }
+        // Empêcher le zoom sur double-tap
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>
