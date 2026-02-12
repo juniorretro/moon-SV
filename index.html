@@ -107,18 +107,25 @@
 
         .puzzle-piece {
             background-size: 300% 200%;
-            border: 2px solid rgba(255, 179, 217, 0.3);
+            border: 3px solid rgba(255, 179, 217, 0.3);
             border-radius: 8px;
             cursor: pointer;
-            touch-action: none;
+            touch-action: manipulation;
             user-select: none;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
         .puzzle-piece.selected {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 179, 217, 0.8);
-            border-color: #ffb3d9;
+            transform: scale(0.95);
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            z-index: 10;
+        }
+
+        .puzzle-piece.correct {
+            border-color: #90EE90 !important;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.6);
         }
 
         .puzzle-message {
@@ -495,98 +502,88 @@
             document.getElementById(sectionId).classList.add('active');
         }
 
-        // ÉPREUVE 1: PUZZLE - NOUVELLE VERSION SIMPLIFIÉE
+        // ÉPREUVE 1: PUZZLE - VERSION CORRIGÉE
         const puzzleGrid = document.getElementById('puzzleGrid');
         const puzzleMessage = document.getElementById('puzzleMessage');
         const puzzleBtn = document.getElementById('puzzleBtn');
         
-        let pieces = [];
-        let selectedPiece = null;
+        let puzzleState = [];
+        let selectedIndex = null;
 
         function initPuzzle() {
-            const positions = [0, 1, 2, 3, 4, 5];
-            const shuffled = positions.sort(() => Math.random() - 0.5);
+            // Créer un ordre mélangé
+            puzzleState = [0, 1, 2, 3, 4, 5];
             
-            shuffled.forEach((correctPos, currentIndex) => {
+            // Mélanger
+            for (let i = puzzleState.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [puzzleState[i], puzzleState[j]] = [puzzleState[j], puzzleState[i]];
+            }
+            
+            renderPuzzle();
+        }
+
+        function renderPuzzle() {
+            puzzleGrid.innerHTML = '';
+            
+            puzzleState.forEach((correctPosition, currentIndex) => {
                 const piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                piece.dataset.correct = correctPos;
-                piece.dataset.current = currentIndex;
+                piece.dataset.index = currentIndex;
                 
-                const col = correctPos % 3;
-                const row = Math.floor(correctPos / 3);
+                // Position de l'image
+                const col = correctPosition % 3;
+                const row = Math.floor(correctPosition / 3);
                 piece.style.backgroundImage = 'url(photo.jpeg)';
                 piece.style.backgroundPosition = `${col * 50}% ${row * 100}%`;
                 
-                // Système de sélection simple : toucher 2 pièces pour les échanger
-                piece.addEventListener('click', handlePieceClick);
-                piece.addEventListener('touchend', function(e) {
+                // Gérer les clics/touches
+                piece.addEventListener('click', () => handlePieceClick(currentIndex));
+                piece.addEventListener('touchend', (e) => {
                     e.preventDefault();
-                    handlePieceClick.call(this, e);
+                    handlePieceClick(currentIndex);
                 });
                 
                 puzzleGrid.appendChild(piece);
-                pieces.push(piece);
             });
         }
 
-        function handlePieceClick(e) {
-            e.preventDefault();
+        function handlePieceClick(index) {
+            const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
             
-            if (!selectedPiece) {
-                // Première pièce sélectionnée
-                selectedPiece = this;
-                this.classList.add('selected');
-            } else if (selectedPiece === this) {
-                // Désélectionner si on clique sur la même pièce
-                selectedPiece.classList.remove('selected');
-                selectedPiece = null;
+            if (selectedIndex === null) {
+                // Sélectionner la première pièce
+                selectedIndex = index;
+                pieces[index].classList.add('selected');
+            } else if (selectedIndex === index) {
+                // Déselectionner si on clique sur la même
+                pieces[index].classList.remove('selected');
+                selectedIndex = null;
             } else {
-                // Deuxième pièce : échanger
-                swapPieces(selectedPiece, this);
-                selectedPiece.classList.remove('selected');
-                selectedPiece = null;
+                // Échanger les deux pièces
+                pieces[selectedIndex].classList.remove('selected');
                 
-                // Vérifier si le puzzle est résolu
+                // Échanger dans l'état
+                [puzzleState[selectedIndex], puzzleState[index]] = [puzzleState[index], puzzleState[selectedIndex]];
+                
+                selectedIndex = null;
+                
+                // Re-render
+                renderPuzzle();
+                
+                // Vérifier si résolu
                 setTimeout(checkPuzzleComplete, 300);
             }
         }
 
-        function swapPieces(piece1, piece2) {
-            // Échanger visuellement dans le DOM
-            const parent = puzzleGrid;
-            const allPieces = Array.from(parent.children);
-            const index1 = allPieces.indexOf(piece1);
-            const index2 = allPieces.indexOf(piece2);
-            
-            // Échanger les positions dans le dataset
-            const tempCurrent = piece1.dataset.current;
-            piece1.dataset.current = piece2.dataset.current;
-            piece2.dataset.current = tempCurrent;
-            
-            // Échanger dans le DOM
-            if (index1 < index2) {
-                parent.insertBefore(piece2, piece1);
-                parent.insertBefore(piece1, allPieces[index2]);
-            } else {
-                parent.insertBefore(piece1, piece2);
-                parent.insertBefore(piece2, allPieces[index1]);
-            }
-        }
-
         function checkPuzzleComplete() {
-            const currentPieces = Array.from(puzzleGrid.children);
-            const isComplete = currentPieces.every((piece, index) => {
-                return parseInt(piece.dataset.correct) === index;
-            });
-            
-            console.log('Puzzle complet ?', isComplete); // Debug
+            const isComplete = puzzleState.every((value, index) => value === index);
             
             if (isComplete) {
-                // Animation de succès
-                currentPieces.forEach((piece, i) => {
+                const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
+                pieces.forEach((piece, i) => {
                     setTimeout(() => {
-                        piece.style.border = '2px solid #90EE90';
+                        piece.classList.add('correct');
                     }, i * 100);
                 });
                 
