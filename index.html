@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select-none">
+    <title>Le Coffre à Souvenirs - Pour Moon ❤️</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(to bottom, #0a0e27 0%, #1a1a3e 50%, #2d1b3d 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Étoiles en arrière-plan */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Container principal */
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Titre */
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #ffb3d9;
+            text-shadow: 0 0 10px rgba(255, 179, 217, 0.5);
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #ffd1e8;
+        }
+
+        /* Puzzle */
+        .puzzle-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+            aspect-ratio: 3/2;
+        }
+
+        .puzzle-piece {
+            background-size: 300% 200%;
+            border: 2px solid rgba(255, 179, 217, 0.3);
+            border-radius: 8px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .puzzle-piece.dragging {
+            opacity: 0.5;
+            cursor: grabbing;
+        }
+
+        .puzzle-message {
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #ffd1e8;
+            margin: 20px 0;
+            display: none;
+        }
+
+        /* Code secret */
+        .code-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .code-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            font-size: 24px;
+            text-align: center;
+            border: 2px solid #ffb3d9;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a3e;
+            margin: 20px auto;
+            display: block;
+            letter-spacing: 3px;
+        }
+
+        .code-message {
+            min-height: 30px;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .code-message.error {
+            color: #ffb3d9;
+        }
+
+        .code-message.success {
+            color: #90EE90;
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Attrape les étoiles */
+        .catch-stars-container {
+            position: relative;
+            height: 70vh;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .catchable-star {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            cursor: pointer;
+            animation: float 3s ease-in-out infinite;
+            transition: transform 0.2s;
+        }
+
+        .catchable-star:active {
+            transform: scale(1.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .words-collected {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 60px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .word-badge {
+            background: rgba(255, 179, 217, 0.3);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            animation: popIn 0.3s;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Coffre */
+        .chest-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .chest {
+            width: 200px;
+            height: 150px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: chestOpen 2s ease-out forwards;
+        }
+
+        .chest-lid {
+            width: 200px;
+            height: 60px;
+            background: linear-gradient(to bottom, #8B4513 0%, #654321 100%);
+            border-radius: 10px 10px 0 0;
+            border: 3px solid #FFD700;
+            position: relative;
+            transform-origin: bottom;
+            animation: lidOpen 1.5s ease-out 0.5s forwards;
+        }
+
+        .chest-body {
+            width: 200px;
+            height: 90px;
+            background: linear-gradient(to bottom, #654321 0%, #4a2f1a 100%);
+            border-radius: 0 0 10px 10px;
+            border: 3px solid #FFD700;
+            position: relative;
+        }
+
+        .chest-lock {
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes lidOpen {
+            to { transform: rotateX(-120deg); }
+        }
+
+        /* Scène finale */
+        .final-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+        }
+
+        .final-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.4);
+        }
+
+        .final-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .final-message {
+            max-width: 500px;
+            font-size: 16px;
+            line-height: 1.8;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        /* Boutons */
+        .btn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Animations étoiles finales */
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatUp 4s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Instructions */
+        .instruction {
+            text-align: center;
+            font-size: 14px;
+            color: #ffd1e8;
+            margin: 10px 0;
+            opacity: 0.8;
+        }
+
+        .progress {
+            text-align: center;
+            font-size: 16px;
+            color: #ffb3d9;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Étoiles d'arrière-plan -->
+    <div class="stars" id="backgroundStars"></div>
+
+    <div class="container">
+        <!-- ÉPREUVE 1: Puzzle -->
+        <div class="section active" id="puzzle-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 1 : Reconstitue notre photo</h2>
+            <div class="puzzle-container">
+                <div class="puzzle-grid" id="puzzleGrid"></div>
+                <p class="instruction">Glisse les pièces pour reconstituer l'image</p>
+                <div class="puzzle-message" id="puzzleMessage">
+                    Ce soir-là… le 16 décembre 2023 💫<br>
+                    Tout semblait parfait.
+                </div>
+                <button class="btn" id="puzzleBtn" style="display:none;">Continuer ✨</button>
+            </div>
+        </div>
+
+        <!-- ÉPREUVE 2: Code secret -->
+        <div class="section" id="code-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 2 : Le Code Secret</h2>
+            <div class="code-container">
+                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                    Entre la date d'un soir que je n'ai jamais oublié…
+                </p>
+                <input type="number" class="code-input" id="codeInput" placeholder="JJMMAAAA" maxlength="8">
+                <div class="code-message" id="codeMessage"></div>
+                <button class="btn" id="codeBtn">Valider 💝</button>
+            </div>
+        </div>
+
+        <!-- ÉPREUVE 3: Attrape les étoiles -->
+        <div class="section" id="stars-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 3 : Attrape les Étoiles</h2>
+            <p class="progress" id="starsProgress">0 / 6 étoiles attrapées</p>
+            <div class="words-collected" id="wordsCollected"></div>
+            <div class="catch-stars-container" id="catchStarsContainer"></div>
+        </div>
+
+        <!-- SCÈNE DU COFFRE -->
+        <div class="section" id="chest-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <div class="chest-container">
+                <div class="chest">
+                    <div class="chest-lid">
+                        <div class="chest-lock"></div>
+                    </div>
+                    <div class="chest-body"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCÈNE FINALE -->
+    <div class="final-scene" id="finalScene" style="display:none;">
+        <video class="final-video" id="finalVideo" loop muted playsinline>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+        <div class="final-overlay">
+            <div class="final-message typewriter" id="finalMessage"></div>
+            <button class="btn" id="musicBtn">💗 Lancer notre musique</button>
+        </div>
+        <div class="floating-hearts" id="floatingHearts"></div>
+    </div>
+
+    <audio id="musicPlayer" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Création des étoiles d'arrière-plan
+        function createBackgroundStars() {
+            const starsContainer = document.getElementById('backgroundStars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+        createBackgroundStars();
+
+        // Navigation entre sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        // ÉPREUVE 1: PUZZLE
+        const puzzleGrid = document.getElementById('puzzleGrid');
+        const puzzleMessage = document.getElementById('puzzleMessage');
+        const puzzleBtn = document.getElementById('puzzleBtn');
+        
+        let pieces = [];
+        let draggedPiece = null;
+        let touchStartPos = null;
+
+        function initPuzzle() {
+            const positions = [0, 1, 2, 3, 4, 5];
+            const shuffled = positions.sort(() => Math.random() - 0.5);
+            
+            shuffled.forEach((pos, index) => {
+                const piece = document.createElement('div');
+                piece.className = 'puzzle-piece';
+                piece.dataset.correct = pos;
+                piece.dataset.current = index;
+                
+                const col = pos % 3;
+                const row = Math.floor(pos / 3);
+                piece.style.backgroundImage = 'url(photo.jpeg)';
+                piece.style.backgroundPosition = `${col * 50}% ${row * 100}%`;
+                
+                // Touch events
+                piece.addEventListener('touchstart', handleTouchStart);
+                piece.addEventListener('touchmove', handleTouchMove);
+                piece.addEventListener('touchend', handleTouchEnd);
+                
+                puzzleGrid.appendChild(piece);
+                pieces.push(piece);
+            });
+        }
+
+        function handleTouchStart(e) {
+            draggedPiece = e.target;
+            draggedPiece.classList.add('dragging');
+            touchStartPos = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY,
+                element: draggedPiece
+            };
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!draggedPiece) return;
+            
+            const touch = e.touches[0];
+            const elementBelow = document.elementFromPoint(touch.clientX, touch.clientY);
+            
+            if (elementBelow && elementBelow.classList.contains('puzzle-piece') && elementBelow !== draggedPiece) {
+                swapPieces(draggedPiece, elementBelow);
+            }
+        }
+
+        function handleTouchEnd(e) {
+            if (draggedPiece) {
+                draggedPiece.classList.remove('dragging');
+                draggedPiece = null;
+            }
+            checkPuzzleComplete();
+        }
+
+        function swapPieces(piece1, piece2) {
+            const temp = piece1.dataset.current;
+            piece1.dataset.current = piece2.dataset.current;
+            piece2.dataset.current = temp;
+            
+            const parent = piece1.parentNode;
+            const index1 = Array.from(parent.children).indexOf(piece1);
+            const index2 = Array.from(parent.children).indexOf(piece2);
+            
+            if (index1 < index2) {
+                parent.insertBefore(piece2, piece1);
+                parent.insertBefore(piece1, parent.children[index2]);
+            } else {
+                parent.insertBefore(piece1, piece2);
+                parent.insertBefore(piece2, parent.children[index1]);
+            }
+        }
+
+        function checkPuzzleComplete() {
+            const allCorrect = pieces.every((piece, index) => {
+                return parseInt(piece.dataset.correct) === index;
+            });
+            
+            if (allCorrect) {
+                setTimeout(() => {
+                    puzzleMessage.style.display = 'block';
+                    puzzleBtn.style.display = 'block';
+                }, 500);
+            }
+        }
+
+        initPuzzle();
+
+        puzzleBtn.addEventListener('click', () => {
+            showSection('code-section');
+        });
+
+        // ÉPREUVE 2: CODE SECRET
+        const codeInput = document.getElementById('codeInput');
+        const codeMessage = document.getElementById('codeMessage');
+        const codeBtn = document.getElementById('codeBtn');
+
+        codeBtn.addEventListener('click', () => {
+            const code = codeInput.value;
+            if (code === '16122023') {
+                codeMessage.textContent = '✨ Parfait ! Le coffre s\'ouvre peu à peu...';
+                codeMessage.className = 'code-message success';
+                setTimeout(() => {
+                    showSection('stars-section');
+                    initCatchStars();
+                }, 1500);
+            } else {
+                codeMessage.textContent = '💫 Concentre-toi... Cette date est gravée dans mon cœur.';
+                codeMessage.className = 'code-message error';
+                codeInput.value = '';
+            }
+        });
+
+        // ÉPREUVE 3: ATTRAPE LES ÉTOILES
+        const catchStarsContainer = document.getElementById('catchStarsContainer');
+        const wordsCollected = document.getElementById('wordsCollected');
+        const starsProgress = document.getElementById('starsProgress');
+        
+        const words = ['Distance', 'Temps', 'Manque', 'Souvenirs', 'Espoir', 'Nous'];
+        let collectedWords = [];
+
+        function initCatchStars() {
+            words.forEach((word, index) => {
+                setTimeout(() => createCatchableStar(word), index * 800);
+            });
+        }
+
+        function createCatchableStar(word) {
+            if (collectedWords.includes(word)) return;
+            
+            const star = document.createElement('div');
+            star.className = 'catchable-star';
+            star.textContent = '⭐';
+            star.dataset.word = word;
+            
+            star.style.left = Math.random() * (catchStarsContainer.offsetWidth - 40) + 'px';
+            star.style.top = Math.random() * (catchStarsContainer.offsetHeight - 40) + 'px';
+            
+            star.addEventListener('click', () => catchStar(star, word));
+            star.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                catchStar(star, word);
+            });
+            
+            catchStarsContainer.appendChild(star);
+        }
+
+        function catchStar(starElement, word) {
+            if (collectedWords.includes(word)) return;
+            
+            collectedWords.push(word);
+            starElement.remove();
+            
+            const badge = document.createElement('div');
+            badge.className = 'word-badge';
+            badge.textContent = word;
+            wordsCollected.appendChild(badge);
+            
+            starsProgress.textContent = `${collectedWords.length} / 6 étoiles attrapées`;
+            
+            if (collectedWords.length < 6) {
+                setTimeout(() => createCatchableStar(word), 500);
+            } else {
+                setTimeout(() => {
+                    showSection('chest-section');
+                    setTimeout(() => {
+                        showFinalScene();
+                    }, 3000);
+                }, 1000);
+            }
+        }
+
+        // SCÈNE FINALE
+        function showFinalScene() {
+            const finalScene = document.getElementById('finalScene');
+            const finalVideo = document.getElementById('finalVideo');
+            const finalMessage = document.getElementById('finalMessage');
+            
+            finalScene.style.display = 'block';
+            finalVideo.play();
+            
+            const message = `Moon ❤️ bonne saint valentin,
+
+Le 16 décembre 2023 reste gravé dans mon cœur comme l'un des plus beaux jours de ma vie. Même si la distance nous sépare aujourd'hui, elle ne change rien à ce que je ressens pour toi. Le temps passe, les kilomètres existent… mais mes sentiments restent les mêmes. Et je sais qu'un jour, on se retrouvera. ❤️ Parce que certaines histoires ne s'arrêtent pas… elles patientent.
+
+— Retro 💫`;
+            
+            typeWriter(message, finalMessage, 30);
+        }
+
+        function typeWriter(text, element, speed) {
+            let i = 0;
+            element.textContent = '';
+            function type() {
+                if (i < text.length) {
+                    element.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Musique
+        const musicBtn = document.getElementById('musicBtn');
+        const musicPlayer = document.getElementById('musicPlayer');
+        const floatingHearts = document.getElementById('floatingHearts');
+
+        musicBtn.addEventListener('click', () => {
+            musicPlayer.play();
+            musicBtn.textContent = '🎵 Musique en cours...';
+            musicBtn.disabled = true;
+            createFloatingHearts();
+        });
+
+        function createFloatingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = ['💗', '💖', '💝', '💕'][Math.floor(Math.random() * 4)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                floatingHearts.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 6000);
+            }, 300);
+        }
+    </script>
+</body>
+</html>
