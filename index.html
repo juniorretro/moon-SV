@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select-none">
     <title>Le Coffre à Souvenirs - Pour Moon ❤️</title>
     <style>
         * {
@@ -14,14 +14,14 @@
 
         body {
             font-family: 'Georgia', serif;
-            background: linear-gradient(180deg, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
-            color: #ffffff;
-            overflow-x: hidden;
+            background: linear-gradient(to bottom, #0a0e27 0%, #1a1a3e 50%, #2d1b3d 100%);
+            color: #fff;
             min-height: 100vh;
+            overflow-x: hidden;
             position: relative;
         }
 
-        /* Animation d'étoiles de fond */
+        /* Étoiles en arrière-plan */
         .stars {
             position: fixed;
             top: 0;
@@ -34,8 +34,6 @@
 
         .star {
             position: absolute;
-            width: 2px;
-            height: 2px;
             background: white;
             border-radius: 50%;
             animation: twinkle 3s infinite;
@@ -46,29 +44,45 @@
             50% { opacity: 1; }
         }
 
+        /* Messages flottants */
+        .floating-message {
+            position: fixed;
+            font-size: 14px;
+            color: #ffb3d9;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999;
+            animation: floatMessage 4s ease-out forwards;
+        }
+
+        @keyframes floatMessage {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            10% { opacity: 1; transform: translateY(-20px) scale(1); }
+            90% { opacity: 1; transform: translateY(-100px) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(0.8); }
+        }
+
         /* Container principal */
         .container {
             position: relative;
             z-index: 1;
             padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
         }
 
-        .screen {
+        /* Sections */
+        .section {
             display: none;
-            width: 100%;
-            max-width: 500px;
-            animation: fadeIn 0.6s ease-in;
+            animation: fadeIn 0.8s ease-in;
         }
 
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .section.active {
+            display: block;
         }
 
         @keyframes fadeIn {
@@ -76,230 +90,220 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Écran d'accueil */
-        .welcome {
+        /* Titre */
+        h1 {
             text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #ffb3d9;
+            text-shadow: 0 0 10px rgba(255, 179, 217, 0.5);
         }
 
-        .welcome h1 {
-            font-size: 2.5rem;
+        h2 {
+            text-align: center;
+            font-size: 20px;
             margin-bottom: 20px;
-            background: linear-gradient(45deg, #ff6b9d, #c06c84);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .welcome p {
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-            color: #ffc2d4;
-            line-height: 1.6;
-        }
-
-        .heart-animation {
-            font-size: 4rem;
-            animation: heartbeat 1.5s infinite;
-            margin-bottom: 30px;
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            25% { transform: scale(1.1); }
-            50% { transform: scale(1); }
-        }
-
-        /* Boutons */
-        button {
-            background: linear-gradient(135deg, #ff6b9d, #c06c84);
-            border: none;
-            color: white;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
-            transition: all 0.3s ease;
-            font-family: 'Georgia', serif;
-            margin-top: 20px;
-        }
-
-        button:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.4);
+            color: #ffd1e8;
         }
 
         /* Puzzle */
         .puzzle-container {
-            width: 100%;
-            text-align: center;
-        }
-
-        .puzzle-title {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: #ffc2d4;
-        }
-
-        .puzzle-board {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
             background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
             padding: 20px;
-            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 5px;
+            margin-bottom: 20px;
+            aspect-ratio: 3/2;
         }
 
         .puzzle-piece {
-            aspect-ratio: 1;
-            background-size: 200% 300%;
-            border-radius: 10px;
-            cursor: move;
-            touch-action: none;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background-size: 300% 200%;
+            border: 3px solid rgba(255, 179, 217, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            touch-action: manipulation;
+            user-select: none;
             transition: all 0.3s ease;
+            position: relative;
         }
 
-        .puzzle-piece.dragging {
-            opacity: 0.5;
-            transform: scale(1.1);
+        .puzzle-piece.selected {
+            transform: scale(0.95);
+            border-color: #FFD700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.8);
+            z-index: 10;
         }
 
         .puzzle-piece.correct {
-            border-color: #ff6b9d;
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+            border-color: #90EE90 !important;
+            box-shadow: 0 0 15px rgba(144, 238, 144, 0.6);
         }
 
         .puzzle-message {
-            font-size: 1.2rem;
-            color: #ffc2d4;
-            margin: 20px 0;
+            text-align: center;
+            font-size: 16px;
             line-height: 1.6;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .puzzle-message.show {
-            opacity: 1;
+            color: #ffd1e8;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.8s;
         }
 
         /* Code secret */
         .code-container {
-            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px 20px;
+            backdrop-filter: blur(10px);
             text-align: center;
-        }
-
-        .code-title {
-            font-size: 1.5rem;
-            margin-bottom: 30px;
-            color: #ffc2d4;
-            line-height: 1.6;
         }
 
         .code-input {
             width: 100%;
             max-width: 300px;
             padding: 15px;
-            font-size: 1.5rem;
+            font-size: 24px;
             text-align: center;
-            border: 2px solid #ff6b9d;
-            border-radius: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            margin-bottom: 20px;
-        }
-
-        .code-input:focus {
-            outline: none;
-            box-shadow: 0 0 20px rgba(255, 107, 157, 0.6);
+            border: 2px solid #ffb3d9;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a3e;
+            margin: 20px auto;
+            display: block;
+            letter-spacing: 3px;
         }
 
         .code-message {
-            font-size: 1rem;
-            margin-top: 15px;
             min-height: 30px;
+            margin: 15px 0;
+            font-size: 14px;
         }
 
         .code-message.error {
-            color: #ffc2d4;
+            color: #ffb3d9;
         }
 
         .code-message.success {
-            color: #4fffb0;
-            animation: glow 1s ease-in-out;
+            color: #90EE90;
+            animation: pulse 0.5s;
         }
 
-        @keyframes glow {
-            0%, 100% { text-shadow: 0 0 10px rgba(79, 255, 176, 0.5); }
-            50% { text-shadow: 0 0 20px rgba(79, 255, 176, 1); }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         /* Attrape les étoiles */
-        .stars-game-container {
-            width: 100%;
+        .catch-stars-container {
+            position: relative;
             height: 70vh;
-            position: relative;
-            text-align: center;
-        }
-
-        .stars-game-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            color: #ffc2d4;
-        }
-
-        .stars-counter {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-            color: #4fffb0;
-        }
-
-        .game-area {
-            position: relative;
-            width: 100%;
-            height: 100%;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
+            border-radius: 15px;
             overflow: hidden;
         }
 
         .catchable-star {
             position: absolute;
-            font-size: 2.5rem;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
             cursor: pointer;
-            animation: starFloat 3s ease-in-out infinite;
-            transition: all 0.3s ease;
-            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+            transition: transform 0.2s;
         }
 
         .catchable-star:active {
-            transform: scale(1.3) rotate(180deg);
+            transform: scale(1.3);
         }
 
-        @keyframes starFloat {
-            0%, 100% { transform: translateY(0); }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
 
-        .collected-words {
+        .words-collected {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            min-height: 60px;
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
             justify-content: center;
-            margin-top: 20px;
+            gap: 10px;
         }
 
-        .word-chip {
-            background: linear-gradient(135deg, #ff6b9d, #c06c84);
-            padding: 8px 16px;
+        .word-badge {
+            background: rgba(255, 179, 217, 0.3);
+            padding: 8px 15px;
             border-radius: 20px;
-            font-size: 0.9rem;
-            box-shadow: 0 4px 10px rgba(255, 107, 157, 0.4);
+            font-size: 14px;
+            animation: popIn 0.3s;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Coffre */
+        .chest-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .chest {
+            width: 200px;
+            height: 150px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: chestOpen 2s ease-out forwards;
+        }
+
+        .chest-lid {
+            width: 200px;
+            height: 60px;
+            background: linear-gradient(to bottom, #8B4513 0%, #654321 100%);
+            border-radius: 10px 10px 0 0;
+            border: 3px solid #FFD700;
+            position: relative;
+            transform-origin: bottom;
+            animation: lidOpen 1.5s ease-out 0.5s forwards;
+        }
+
+        .chest-body {
+            width: 200px;
+            height: 90px;
+            background: linear-gradient(to bottom, #654321 0%, #4a2f1a 100%);
+            border-radius: 0 0 10px 10px;
+            border: 3px solid #FFD700;
+            position: relative;
+        }
+
+        .chest-lock {
+            width: 30px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes lidOpen {
+            to { transform: rotateX(-120deg); }
         }
 
         /* Scène finale */
-        .final-container {
+        .final-scene {
             position: fixed;
             top: 0;
             left: 0;
@@ -308,14 +312,14 @@
             z-index: 1000;
         }
 
-        .video-background {
+        .final-video {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             object-fit: cover;
-            z-index: 1;
+            filter: brightness(0.4);
         }
 
         .final-overlay {
@@ -324,531 +328,1303 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 14, 39, 0.85);
-            z-index: 2;
+            background: rgba(10, 14, 39, 0.7);
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             padding: 30px;
             overflow-y: auto;
         }
 
-        .chest-animation {
-            font-size: 5rem;
-            margin-bottom: 30px;
-            animation: chestOpen 2s ease-out forwards;
-        }
-
-        @keyframes chestOpen {
-            0% { transform: scale(0.5) rotateY(0deg); opacity: 0; }
-            50% { transform: scale(1.2) rotateY(180deg); }
-            100% { transform: scale(1) rotateY(360deg); opacity: 1; }
-        }
-
         .final-message {
             max-width: 500px;
-            text-align: center;
-            font-size: 1.1rem;
+            font-size: 16px;
             line-height: 1.8;
-            color: #ffc2d4;
+            text-align: center;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
             margin-bottom: 30px;
         }
 
-        .final-message h2 {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            background: linear-gradient(45deg, #ff6b9d, #c06c84);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        /* TIMELINE */
+        .timeline-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(255, 179, 217, 0.3);
         }
 
-        .typewriter {
-            overflow: hidden;
-            white-space: pre-wrap;
+        .timeline-title {
+            text-align: center;
+            font-size: 20px;
+            color: #ffb3d9;
+            margin-bottom: 25px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, #ff6b9d, #ffb3d9);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
             opacity: 0;
+            animation: slideInTimeline 0.6s forwards;
         }
 
-        .typewriter.typing {
-            opacity: 1;
+        .timeline-item:nth-child(1) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.6s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.8s; }
+        .timeline-item:nth-child(5) { animation-delay: 1s; }
+
+        @keyframes slideInTimeline {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .music-button {
-            background: linear-gradient(135deg, #ff6b9d, #c06c84);
-            border: none;
+        .timeline-dot {
+            position: absolute;
+            left: -32px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffb3d9;
+            box-shadow: 0 0 10px #ffb3d9;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .timeline-date {
+            font-size: 14px;
+            color: #ff6b9d;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content {
+            font-size: 14px;
+            color: #ffd1e8;
+            line-height: 1.5;
+        }
+
+        /* BOUTON PENSE À TOI */
+        .think-button-container {
+            text-align: center;
+            margin: 30px auto;
+            max-width: 400px;
+        }
+
+        .think-button {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
             color: white;
-            padding: 15px 40px;
-            font-size: 1.2rem;
+            border: none;
+            padding: 20px 50px;
+            font-size: 20px;
             border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 107, 157, 0.4);
-            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+            transition: all 0.3s;
             font-family: 'Georgia', serif;
+            position: relative;
+            overflow: hidden;
         }
 
-        .music-button:active {
+        .think-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(231, 76, 60, 0.6);
+        }
+
+        .think-button:active {
             transform: scale(0.95);
         }
 
-        .floating-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 999;
+        .think-button::before {
+            content: '💗';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 50px;
+            animation: heartBurst 0.6s ease-out;
         }
 
-        .floating-heart {
+        @keyframes heartBurst {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+        }
+
+        .think-counter {
+            text-align: center;
+            font-size: 14px;
+            color: #ffd1e8;
+            margin-top: 15px;
+        }
+
+        .think-animation {
+            animation: heartBurst 0.6s ease-out;
+        }
+
+        /* QUIZ */
+        .quiz-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-title {
+            text-align: center;
+            font-size: 20px;
+            color: #ffb3d9;
+            margin-bottom: 20px;
+        }
+
+        .quiz-question {
+            font-size: 16px;
+            color: #ffd1e8;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .quiz-option {
+            background: rgba(255, 179, 217, 0.2);
+            border: 2px solid #ffb3d9;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: #fff;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 179, 217, 0.3);
+            transform: translateX(5px);
+        }
+
+        .quiz-option.correct {
+            background: #90EE90;
+            border-color: #90EE90;
+            color: #1a1a3e;
+        }
+
+        .quiz-option.wrong {
+            background: #e74c3c;
+            border-color: #e74c3c;
+        }
+
+        .quiz-result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #90EE90;
+            display: none;
+        }
+
+        /* CARTE DU MONDE */
+        .distance-map {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            margin: 20px auto;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 179, 217, 0.3);
+        }
+
+        .map-point {
             position: absolute;
-            font-size: 2rem;
-            animation: floatUp 4s ease-in forwards;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            animation: pulse-point 2s infinite;
+        }
+
+        .point-retro {
+            background: #ff6b9d;
+            box-shadow: 0 0 20px #ff6b9d;
+            left: 25%;
+            top: 50%;
+        }
+
+        .point-moon {
+            background: #ffb3d9;
+            box-shadow: 0 0 20px #ffb3d9;
+            right: 25%;
+            top: 50%;
+        }
+
+        @keyframes pulse-point {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.7; }
+        }
+
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, #ff6b9d 0%, #ffb3d9 100%);
+            top: 50%;
+            left: 25%;
+            right: 25%;
+            transform: translateY(-50%);
+            animation: line-glow 2s infinite;
+        }
+
+        @keyframes line-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; box-shadow: 0 0 10px #ffb3d9; }
+        }
+
+        .distance-info {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #ffd1e8;
+        }
+
+        .distance-text {
+            font-size: 18px;
+            color: #ffb3d9;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        /* GALERIE PHOTOS */
+        .photo-gallery {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid rgba(255, 179, 217, 0.3);
+        }
+
+        .gallery-title {
+            text-align: center;
+            font-size: 18px;
+            color: #ffb3d9;
+            margin-bottom: 20px;
+        }
+
+        .photo-slider {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .media-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
             opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .media-slide.active {
+            opacity: 1;
+        }
+
+        .media-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .gallery-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 179, 217, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #ffb3d9;
+            transform: scale(1.3);
+        }
+
+        .dot.video-dot {
+            border: 2px solid #ffb3d9;
+        }
+
+        /* LIVRE D'OR */
+        .guestbook-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .guestbook-title {
+            text-align: center;
+            font-size: 20px;
+            color: #ffb3d9;
+            margin-bottom: 20px;
+        }
+
+        .guestbook-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #ffb3d9;
+            background: rgba(255, 255, 255, 0.9);
+            color: #1a1a3e;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 12px;
+            color: #ffd1e8;
+            margin-top: 5px;
+        }
+
+        .saved-message {
+            text-align: center;
+            color: #90EE90;
+            margin-top: 15px;
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        /* CAPSULE TEMPORELLE */
+        .capsule-container {
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .capsule-title {
+            text-align: center;
+            font-size: 20px;
+            color: #ffb3d9;
+            margin-bottom: 20px;
+        }
+
+        /* Boutons */
+        .btn {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            box-shadow: 0 5px 15px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Georgia', serif;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 3px 10px rgba(255, 107, 157, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            box-shadow: 0 5px 15px rgba(155, 89, 182, 0.4);
+        }
+
+        /* Animations étoiles finales */
+        .floating-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            animation: floatUp 4s linear infinite;
         }
 
         @keyframes floatUp {
-            0% { 
-                transform: translateY(0) scale(0);
+            0% {
+                transform: translateY(100vh) rotate(0deg);
                 opacity: 1;
             }
-            100% { 
-                transform: translateY(-100vh) scale(1);
+            100% {
+                transform: translateY(-100px) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        /* Loading animation */
-        .loading {
+        /* Instructions */
+        .instruction {
             text-align: center;
-            font-size: 1.5rem;
-            color: #ffc2d4;
+            font-size: 14px;
+            color: #ffd1e8;
+            margin: 10px 0;
+            opacity: 0.8;
         }
 
-        .loading-dots::after {
-            content: '.';
-            animation: dots 1.5s steps(3, end) infinite;
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
+        .progress {
+            text-align: center;
+            font-size: 16px;
+            color: #ffb3d9;
+            margin: 15px 0;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <!-- Étoiles de fond -->
+    <!-- Étoiles d'arrière-plan -->
     <div class="stars" id="backgroundStars"></div>
 
-    <!-- Container principal -->
     <div class="container">
-        <!-- Écran d'accueil -->
-        <div class="screen active" id="welcomeScreen">
-            <div class="welcome">
-                <div class="heart-animation">💝</div>
-                <h1>Le Coffre à Souvenirs</h1>
-                <p>Pour Moon ❤️</p>
-                <p>Une expérience spéciale créée avec amour...</p>
-                <button onclick="startJourney()">Commencer l'aventure ✨</button>
-            </div>
-        </div>
-
-        <!-- Épreuve 1 : Puzzle -->
-        <div class="screen" id="puzzleScreen">
+        <!-- ÉPREUVE 1: Puzzle -->
+        <div class="section active" id="puzzle-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 1 : Reconstitue notre photo</h2>
             <div class="puzzle-container">
-                <h2 class="puzzle-title">🧩 Reconstitue notre photo</h2>
-                <div class="puzzle-board" id="puzzleBoard"></div>
+                <div class="puzzle-grid" id="puzzleGrid"></div>
+                <p class="instruction">Touche deux pièces pour les échanger</p>
                 <div class="puzzle-message" id="puzzleMessage">
-                    Ce soir-là… le 16 décembre 2023 💫<br>Tout semblait parfait.
+                    Ce soir-là… le 16 décembre 2023 💫<br>
+                    Tout semblait parfait.
                 </div>
-                <button id="puzzleContinue" style="display: none;" onclick="nextScreen('codeScreen')">Continuer</button>
+                <button class="btn" id="puzzleBtn" style="display:none;">Continuer ✨</button>
             </div>
         </div>
 
-        <!-- Épreuve 2 : Code secret -->
-        <div class="screen" id="codeScreen">
+        <!-- ÉPREUVE 2: Code secret -->
+        <div class="section" id="code-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 2 : Le Code Secret</h2>
             <div class="code-container">
-                <h2 class="code-title">🔐 Entre la date d'un soir que je n'ai jamais oublié…</h2>
-                <input 
-                    type="number" 
-                    class="code-input" 
-                    id="codeInput" 
-                    placeholder="JJMMAAAA"
-                    maxlength="8"
-                >
-                <button onclick="checkCode()">Valider</button>
+                <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+                    Entre la date d'un soir que je n'ai jamais oublié…
+                </p>
+                <input type="number" class="code-input" id="codeInput" placeholder="JJMMAAAA" maxlength="8">
                 <div class="code-message" id="codeMessage"></div>
+                <button class="btn" id="codeBtn">Valider 💝</button>
             </div>
         </div>
 
-        <!-- Épreuve 3 : Attrape les étoiles -->
-        <div class="screen" id="starsGameScreen">
-            <div class="stars-game-container">
-                <h2 class="stars-game-title">⭐ Attrape les étoiles</h2>
-                <div class="stars-counter" id="starsCounter">Étoiles attrapées : 0/6</div>
-                <div class="game-area" id="gameArea"></div>
-                <div class="collected-words" id="collectedWords"></div>
+        <!-- ÉPREUVE 3: Attrape les étoiles -->
+        <div class="section" id="stars-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <h2>Épreuve 3 : Attrape les Étoiles</h2>
+            <p class="progress" id="starsProgress">0 / 6 étoiles attrapées</p>
+            <div class="words-collected" id="wordsCollected"></div>
+            <div class="catch-stars-container" id="catchStarsContainer"></div>
+        </div>
+
+        <!-- SCÈNE DU COFFRE -->
+        <div class="section" id="chest-section">
+            <h1>Le Coffre à Souvenirs 💫</h1>
+            <div class="chest-container">
+                <div class="chest">
+                    <div class="chest-lid">
+                        <div class="chest-lock"></div>
+                    </div>
+                    <div class="chest-body"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Floating hearts container -->
-    <div class="floating-hearts" id="floatingHearts"></div>
+    <!-- SCÈNE FINALE -->
+    <div class="final-scene" id="finalScene" style="display:none;">
+        <video class="final-video" id="finalVideo" loop muted playsinline>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+        <div class="final-overlay">
+            <div class="final-message" id="finalMessage"></div>
+            <button class="btn" id="musicBtn">💗 Lancer notre musique</button>
+            <button class="btn btn-secondary" id="continueBtn" style="display:none;">✨ Découvre la suite...</button>
+        </div>
+        <div class="floating-hearts" id="floatingHearts"></div>
+    </div>
+
+    <!-- SECTION EXTRAS -->
+    <div class="final-scene" id="extrasScene" style="display:none;">
+        <video class="final-video" loop muted playsinline>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+        <div class="final-overlay" style="justify-content: flex-start; padding-top: 50px;">
+            <h1 style="margin-bottom: 20px;">💝 Pour Toi, Moon 💝</h1>
+
+            <!-- BOUTON PENSE À TOI -->
+            <div class="think-button-container">
+                <button class="think-button" id="thinkButton">
+                    💗 Je pense à toi 💗
+                </button>
+                <div class="think-counter" id="thinkCounter">
+                    Cliqué <span id="thinkCount">0</span> fois
+                </div>
+            </div>
+
+            <!-- TIMELINE -->
+            <div class="timeline-container">
+                <div class="timeline-title">⏰ Notre Histoire</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">07 Octobre 2023</div>
+                        <div class="timeline-content">Le soir où tout a commencé... Un moment magique que je n'oublierai jamais 💫</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Nos premiers jours</div>
+                        <div class="timeline-content">Chaque message, chaque appel... Tu es devenue si importante pour moi 💕</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">La distance</div>
+                        <div class="timeline-content">Les kilomètres nous séparent, mais mon cœur reste proche du tien 🌍</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Aujourd'hui</div>
+                        <div class="timeline-content">Malgré tout, mes sentiments restent intacts. Tu me manques chaque jour ❤️</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">Notre futur...</div>
+                        <div class="timeline-content">Je crois en nous. Un jour, on se retrouvera 🌟</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUIZ -->
+            <div class="quiz-container" id="quizContainer">
+                <div class="quiz-title">💕 Quiz : Nous connais-tu vraiment ?</div>
+                <div class="quiz-question" id="quizQuestion">Quelle est notre date spéciale ?</div>
+                <div class="quiz-options" id="quizOptions">
+                    <div class="quiz-option" data-answer="correct">07 Octobre 2023</div>
+                    <div class="quiz-option" data-answer="wrong">16 Décembre 2023</div>
+                    <div class="quiz-option" data-answer="wrong">25 Décembre 2023</div>
+                </div>
+                <div class="quiz-result" id="quizResult">✨ Exact ! Tu te souviens de notre soirée magique 💫</div>
+            </div>
+
+            <!-- CARTE DU MONDE -->
+            <div class="distance-map">
+                <div class="map-point point-retro"></div>
+                <div class="connection-line"></div>
+                <div class="map-point point-moon"></div>
+                <div class="distance-info">
+                    <div>Retro ←→ Moon</div>
+                    <div class="distance-text">La distance ne change rien 💫</div>
+                </div>
+            </div>
+
+            <!-- GALERIE PHOTOS -->
+            <div class="photo-gallery">
+                <div class="gallery-title">💕 Nos Plus Beaux Moments 💕</div>
+                <div class="photo-slider" id="photoSlider"></div>
+                <div class="gallery-dots" id="galleryDots"></div>
+            </div>
+
+            <!-- LIVRE D'OR -->
+            <div class="guestbook-container">
+                <div class="guestbook-title">📖 Livre d'Or</div>
+                <p style="text-align: center; font-size: 14px; color: #ffd1e8; margin-bottom: 15px;">
+                    Laisse-moi un message que je pourrai relire encore et encore...
+                </p>
+                <textarea 
+                    class="guestbook-textarea" 
+                    id="guestbookText" 
+                    placeholder="Écris tes pensées, tes sentiments, tes promesses... 💕"
+                    maxlength="500"
+                ></textarea>
+                <div class="char-count"><span id="charCount">0</span>/500 caractères</div>
+                <button class="btn" id="saveGuestbook">Sauvegarder mon message 💌</button>
+                <div class="saved-message" id="savedMessage">✨ Message sauvegardé avec amour ✨</div>
+            </div>
+
+            <!-- CAPSULE TEMPORELLE -->
+            <div class="capsule-container">
+                <div class="capsule-title">⏳ Capsule Temporelle</div>
+                <p style="text-align: center; font-size: 14px; color: #ffd1e8; margin-bottom: 15px;">
+                    Laisse-moi un message pour l'avenir... Une promesse, un rêve, un souhait pour nous 🌟
+                </p>
+                <textarea 
+                    class="guestbook-textarea" 
+                    id="capsuleText" 
+                    placeholder="Une promesse, un rêve, un souhait pour notre futur... 🌟"
+                    maxlength="300"
+                    style="min-height: 100px;"
+                ></textarea>
+                <div class="char-count"><span id="capsuleCharCount">0</span>/300 caractères</div>
+                <button class="btn btn-secondary" id="saveCapsuleText">Sceller la capsule 🔒</button>
+                <div class="saved-message" id="capsuleSaved">✨ Capsule scellée avec amour ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SONS (créés en JavaScript) -->
+    <audio id="musicPlayer" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
-        // Configuration
-        const CORRECT_CODE = '16122023';
-        const STAR_WORDS = ['Distance', 'Temps', 'Manque', 'Souvenirs', 'Espoir', 'Nous'];
-        let collectedStars = 0;
-        let currentScreen = 'welcomeScreen';
+        // EFFETS SONORES
+        const sounds = {
+            click: () => {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            },
+            success: () => {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 523.25;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    osc2.frequency.value = 659.25;
+                    osc2.type = 'sine';
+                    gain2.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc2.start(audioCtx.currentTime);
+                    osc2.stop(audioCtx.currentTime + 0.5);
+                }, 150);
+            },
+            heart: () => {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.frequency.value = 440;
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
+        };
 
-        // Générer les étoiles de fond
+        // MESSAGES FLOTTANTS ALÉATOIRES
+        const floatingMessages = [
+            "Tu me manques 💕",
+            "Je pense à toi 💫",
+            "Tu es belle 🌟",
+            "Mon cœur 💗",
+            "Ma Moon ❤️",
+            "Je t'aime 💝"
+        ];
+
+        function createFloatingMessage() {
+            const message = document.createElement('div');
+            message.className = 'floating-message';
+            message.textContent = floatingMessages[Math.floor(Math.random() * floatingMessages.length)];
+            message.style.left = Math.random() * 80 + 10 + '%';
+            message.style.top = Math.random() * 80 + 10 + '%';
+            document.body.appendChild(message);
+            setTimeout(() => message.remove(), 4000);
+        }
+
+        // Créer un message flottant toutes les 20 secondes
+        setInterval(createFloatingMessage, 20000);
+
+        // Création des étoiles d'arrière-plan
         function createBackgroundStars() {
             const starsContainer = document.getElementById('backgroundStars');
             for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
                 star.style.animationDelay = Math.random() * 3 + 's';
                 starsContainer.appendChild(star);
             }
         }
+        createBackgroundStars();
 
-        // Navigation entre les écrans
-        function nextScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            currentScreen = screenId;
+        // Navigation entre sections
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
         }
 
-        // Démarrer l'aventure
-        function startJourney() {
-            nextScreen('puzzleScreen');
-            initPuzzle();
-        }
-
-        // ÉPREUVE 1 : PUZZLE
+        // ÉPREUVE 1: PUZZLE
+        const puzzleGrid = document.getElementById('puzzleGrid');
+        const puzzleMessage = document.getElementById('puzzleMessage');
+        const puzzleBtn = document.getElementById('puzzleBtn');
+        
         let puzzleState = [];
-        let draggedElement = null;
-        let touchStartPos = { x: 0, y: 0 };
+        let selectedIndex = null;
 
         function initPuzzle() {
-            const board = document.getElementById('puzzleBoard');
-            board.innerHTML = '';
             puzzleState = [0, 1, 2, 3, 4, 5];
             
-            // Mélanger les pièces
             for (let i = puzzleState.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [puzzleState[i], puzzleState[j]] = [puzzleState[j], puzzleState[i]];
             }
+            
+            renderPuzzle();
+        }
 
-            // Créer les pièces du puzzle
-            puzzleState.forEach((pieceId, index) => {
+        function renderPuzzle() {
+            puzzleGrid.innerHTML = '';
+            
+            puzzleState.forEach((correctPosition, currentIndex) => {
                 const piece = document.createElement('div');
                 piece.className = 'puzzle-piece';
-                piece.dataset.id = pieceId;
-                piece.dataset.currentPosition = index;
+                piece.dataset.index = currentIndex;
                 
-                // Position de la pièce dans l'image originale
-                const row = Math.floor(pieceId / 2);
-                const col = pieceId % 2;
+                const col = correctPosition % 3;
+                const row = Math.floor(correctPosition / 3);
                 piece.style.backgroundImage = 'url(photo.jpeg)';
-                piece.style.backgroundPosition = `${col * 100}% ${row * 33.33}%`;
-
-                // Events tactiles
-                piece.addEventListener('touchstart', handleTouchStart, { passive: false });
-                piece.addEventListener('touchmove', handleTouchMove, { passive: false });
-                piece.addEventListener('touchend', handleTouchEnd, { passive: false });
-
-                board.appendChild(piece);
+                piece.style.backgroundPosition = `${col * 50}% ${row * 100}%`;
+                
+                piece.addEventListener('click', () => {
+                    sounds.click();
+                    handlePieceClick(currentIndex);
+                });
+                piece.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    sounds.click();
+                    handlePieceClick(currentIndex);
+                });
+                
+                puzzleGrid.appendChild(piece);
             });
         }
 
-        function handleTouchStart(e) {
-            e.preventDefault();
-            draggedElement = e.target;
-            draggedElement.classList.add('dragging');
-            const touch = e.touches[0];
-            touchStartPos = { x: touch.clientX, y: touch.clientY };
-        }
-
-        function handleTouchMove(e) {
-            e.preventDefault();
-        }
-
-        function handleTouchEnd(e) {
-            e.preventDefault();
-            if (!draggedElement) return;
-
-            draggedElement.classList.remove('dragging');
-            const touch = e.changedTouches[0];
-            const endElement = document.elementFromPoint(touch.clientX, touch.clientY);
-
-            if (endElement && endElement.classList.contains('puzzle-piece') && endElement !== draggedElement) {
-                swapPieces(draggedElement, endElement);
-            }
-
-            draggedElement = null;
-        }
-
-        function swapPieces(piece1, piece2) {
-            const pos1 = parseInt(piece1.dataset.currentPosition);
-            const pos2 = parseInt(piece2.dataset.currentPosition);
-
-            // Échanger visuellement
-            const parent = piece1.parentNode;
-            const pieces = Array.from(parent.children);
+        function handlePieceClick(index) {
+            const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
             
-            if (pos1 < pos2) {
-                parent.insertBefore(piece2, piece1);
-                parent.insertBefore(piece1, pieces[pos2]);
+            if (selectedIndex === null) {
+                selectedIndex = index;
+                pieces[index].classList.add('selected');
+            } else if (selectedIndex === index) {
+                pieces[index].classList.remove('selected');
+                selectedIndex = null;
             } else {
-                parent.insertBefore(piece1, piece2);
-                parent.insertBefore(piece2, pieces[pos1]);
+                pieces[selectedIndex].classList.remove('selected');
+                
+                [puzzleState[selectedIndex], puzzleState[index]] = [puzzleState[index], puzzleState[selectedIndex]];
+                
+                selectedIndex = null;
+                renderPuzzle();
+                setTimeout(checkPuzzleComplete, 300);
             }
-
-            // Mettre à jour les positions
-            piece1.dataset.currentPosition = pos2;
-            piece2.dataset.currentPosition = pos1;
-
-            checkPuzzleComplete();
         }
 
         function checkPuzzleComplete() {
-            const pieces = document.querySelectorAll('.puzzle-piece');
-            let isComplete = true;
-
-            pieces.forEach(piece => {
-                const id = parseInt(piece.dataset.id);
-                const pos = parseInt(piece.dataset.currentPosition);
-                
-                if (id === pos) {
-                    piece.classList.add('correct');
-                } else {
-                    piece.classList.remove('correct');
-                    isComplete = false;
-                }
-            });
-
+            const isComplete = puzzleState.every((value, index) => value === index);
+            
             if (isComplete) {
-                setTimeout(() => {
-                    document.getElementById('puzzleMessage').classList.add('show');
-                    document.getElementById('puzzleContinue').style.display = 'block';
-                }, 500);
-            }
-        }
-
-        // ÉPREUVE 2 : CODE SECRET
-        function checkCode() {
-            const input = document.getElementById('codeInput');
-            const message = document.getElementById('codeMessage');
-            const code = input.value;
-
-            if (code === CORRECT_CODE) {
-                message.textContent = '✨ Parfait ! Cette date restera gravée pour toujours...';
-                message.className = 'code-message success';
+                sounds.success();
+                const pieces = puzzleGrid.querySelectorAll('.puzzle-piece');
+                pieces.forEach((piece, i) => {
+                    setTimeout(() => {
+                        piece.classList.add('correct');
+                    }, i * 100);
+                });
                 
                 setTimeout(() => {
-                    nextScreen('starsGameScreen');
-                    initStarsGame();
-                }, 2000);
-            } else {
-                message.textContent = '💫 Réfléchis bien... c\'est une date très spéciale pour nous deux.';
-                message.className = 'code-message error';
-                input.value = '';
+                    puzzleMessage.style.display = 'block';
+                    puzzleBtn.style.display = 'block';
+                }, 800);
             }
         }
 
-        // ÉPREUVE 3 : ATTRAPE LES ÉTOILES
-        function initStarsGame() {
-            collectedStars = 0;
-            updateStarsCounter();
-            spawnStar();
+        initPuzzle();
+
+        puzzleBtn.addEventListener('click', () => {
+            sounds.click();
+            showSection('code-section');
+        });
+
+        // ÉPREUVE 2: CODE SECRET
+        const codeInput = document.getElementById('codeInput');
+        const codeMessage = document.getElementById('codeMessage');
+        const codeBtn = document.getElementById('codeBtn');
+
+        codeBtn.addEventListener('click', () => {
+            sounds.click();
+            const code = codeInput.value;
+            if (code === '16122023') {
+                sounds.success();
+                codeMessage.textContent = '✨ Parfait ! Le coffre s\'ouvre peu à peu...';
+                codeMessage.className = 'code-message success';
+                setTimeout(() => {
+                    showSection('stars-section');
+                    initCatchStars();
+                }, 1500);
+            } else {
+                codeMessage.textContent = '💫 Concentre-toi... Cette date est gravée dans mon cœur.';
+                codeMessage.className = 'code-message error';
+                codeInput.value = '';
+            }
+        });
+
+        // ÉPREUVE 3: ATTRAPE LES ÉTOILES
+        const catchStarsContainer = document.getElementById('catchStarsContainer');
+        const wordsCollected = document.getElementById('wordsCollected');
+        const starsProgress = document.getElementById('starsProgress');
+        
+        const words = ['Distance', 'Temps', 'Manque', 'Souvenirs', 'Espoir', 'Nous'];
+        let collectedWords = [];
+
+        function initCatchStars() {
+            words.forEach((word, index) => {
+                setTimeout(() => createCatchableStar(word), index * 800);
+            });
         }
 
-        function spawnStar() {
-            if (collectedStars >= 6) return;
-
-            const gameArea = document.getElementById('gameArea');
+        function createCatchableStar(word) {
+            if (collectedWords.includes(word)) return;
+            
             const star = document.createElement('div');
             star.className = 'catchable-star';
             star.textContent = '⭐';
+            star.dataset.word = word;
             
-            const maxX = gameArea.clientWidth - 60;
-            const maxY = gameArea.clientHeight - 60;
-            star.style.left = Math.random() * maxX + 'px';
-            star.style.top = Math.random() * maxY + 'px';
-            star.dataset.word = STAR_WORDS[collectedStars];
-
-            star.addEventListener('click', catchStar);
-            star.addEventListener('touchstart', function(e) {
+            star.style.left = Math.random() * (catchStarsContainer.offsetWidth - 40) + 'px';
+            star.style.top = Math.random() * (catchStarsContainer.offsetHeight - 40) + 'px';
+            
+            star.addEventListener('click', () => catchStar(star, word));
+            star.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                catchStar.call(this);
+                catchStar(star, word);
             });
-
-            gameArea.appendChild(star);
+            
+            catchStarsContainer.appendChild(star);
         }
 
-        function catchStar() {
-            const word = this.dataset.word;
-            this.style.animation = 'none';
-            this.style.transform = 'scale(2) rotate(360deg)';
-            this.style.opacity = '0';
-
-            setTimeout(() => {
-                this.remove();
-            }, 300);
-
-            collectedStars++;
-            addCollectedWord(word);
-            updateStarsCounter();
-
-            if (collectedStars < 6) {
-                setTimeout(() => spawnStar(), 800);
+        function catchStar(starElement, word) {
+            if (collectedWords.includes(word)) return;
+            
+            sounds.heart();
+            collectedWords.push(word);
+            starElement.remove();
+            
+            const badge = document.createElement('div');
+            badge.className = 'word-badge';
+            badge.textContent = word;
+            wordsCollected.appendChild(badge);
+            
+            starsProgress.textContent = `${collectedWords.length} / 6 étoiles attrapées`;
+            
+            if (collectedWords.length < 6) {
+                setTimeout(() => createCatchableStar(word), 500);
             } else {
-                setTimeout(() => showFinalScene(), 1500);
+                sounds.success();
+                setTimeout(() => {
+                    showSection('chest-section');
+                    setTimeout(() => {
+                        showFinalScene();
+                    }, 3000);
+                }, 1000);
             }
         }
 
-        function addCollectedWord(word) {
-            const container = document.getElementById('collectedWords');
-            const chip = document.createElement('div');
-            chip.className = 'word-chip';
-            chip.textContent = word;
-            chip.style.opacity = '0';
-            container.appendChild(chip);
+        // BOUTON PENSE À TOI
+        let thinkCount = parseInt(localStorage.getItem('moon_think_count') || '0');
+        document.getElementById('thinkCount').textContent = thinkCount;
+
+        document.getElementById('thinkButton').addEventListener('click', function() {
+            sounds.heart();
+            thinkCount++;
+            localStorage.setItem('moon_think_count', thinkCount);
+            document.getElementById('thinkCount').textContent = thinkCount;
             
-            setTimeout(() => {
-                chip.style.opacity = '1';
-                chip.style.transition = 'opacity 0.5s ease';
-            }, 100);
+            // Animation du bouton
+            this.classList.add('think-animation');
+            setTimeout(() => this.classList.remove('think-animation'), 600);
+            
+            // Créer des cœurs qui s'envolent
+            for(let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.textContent = '💗';
+                    heart.style.position = 'fixed';
+                    heart.style.left = this.getBoundingClientRect().left + Math.random() * 100 + 'px';
+                    heart.style.top = this.getBoundingClientRect().top + 'px';
+                    heart.style.fontSize = '20px';
+                    heart.style.pointerEvents = 'none';
+                    heart.style.zIndex = '9999';
+                    heart.style.animation = 'floatUp 2s ease-out forwards';
+                    document.body.appendChild(heart);
+                    setTimeout(() => heart.remove(), 2000);
+                }, i * 100);
+            }
+        });
+
+        // QUIZ
+        const quizOptions = document.querySelectorAll('.quiz-option');
+        const quizResult = document.getElementById('quizResult');
+
+        quizOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                sounds.click();
+                quizOptions.forEach(opt => opt.style.pointerEvents = 'none');
+                
+                if (this.dataset.answer === 'correct') {
+                    sounds.success();
+                    this.classList.add('correct');
+                    setTimeout(() => {
+                        quizResult.style.display = 'block';
+                    }, 500);
+                } else {
+                    this.classList.add('wrong');
+                    setTimeout(() => {
+                        document.querySelector('[data-answer="correct"]').classList.add('correct');
+                        setTimeout(() => {
+                            quizResult.textContent = '💕 La bonne réponse était le 16 Décembre 2023';
+                            quizResult.style.display = 'block';
+                        }, 500);
+                    }, 500);
+                }
+            });
+        });
+
+        // GALERIE PHOTOS
+        let currentSlide = 0;
+        let galleryMedia = [];
+        let autoplayInterval;
+
+        const mediaItems = [
+            { type: 'image', src: 'photo1.jpg' },
+            { type: 'video', src: 'video1.mp4' },
+            { type: 'image', src: 'photo2.jpg' },
+            { type: 'image', src: 'photo3.jpg' },
+            { type: 'video', src: 'video2.mp4' }
+        ];
+
+        function initGallery() {
+            const photoSlider = document.getElementById('photoSlider');
+            const dotsContainer = document.getElementById('galleryDots');
+            
+            photoSlider.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            mediaItems.forEach((media, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'media-slide' + (index === 0 ? ' active' : '');
+                
+                if (media.type === 'image') {
+                    const img = document.createElement('img');
+                    img.src = media.src;
+                    img.alt = `Souvenir ${index + 1}`;
+                    slide.appendChild(img);
+                } else if (media.type === 'video') {
+                    const video = document.createElement('video');
+                    video.src = media.src;
+                    video.loop = true;
+                    video.muted = true;
+                    video.playsInline = true;
+                    video.autoplay = false;
+                    slide.appendChild(video);
+                }
+                
+                photoSlider.appendChild(slide);
+                galleryMedia.push(slide);
+
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (index === 0 ? ' active' : '');
+                if (media.type === 'video') {
+                    dot.classList.add('video-dot');
+                }
+                dot.addEventListener('click', () => {
+                    sounds.click();
+                    goToSlide(index);
+                });
+                dotsContainer.appendChild(dot);
+            });
+
+            startAutoplay();
         }
 
-        function updateStarsCounter() {
-            document.getElementById('starsCounter').textContent = `Étoiles attrapées : ${collectedStars}/6`;
+        function goToSlide(index) {
+            const currentMedia = galleryMedia[currentSlide];
+            const currentVideo = currentMedia.querySelector('video');
+            if (currentVideo) {
+                currentVideo.pause();
+                currentVideo.currentTime = 0;
+            }
+
+            currentSlide = index;
+            updateSlides();
+
+            clearInterval(autoplayInterval);
+            startAutoplay();
+        }
+
+        function updateSlides() {
+            galleryMedia.forEach((slide, index) => {
+                slide.classList.toggle('active', index === currentSlide);
+            });
+            
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+
+            const activeMedia = galleryMedia[currentSlide];
+            const activeVideo = activeMedia.querySelector('video');
+            if (activeVideo) {
+                activeVideo.play();
+            }
+        }
+
+        function startAutoplay() {
+            autoplayInterval = setInterval(() => {
+                const currentMedia = galleryMedia[currentSlide];
+                const currentVideo = currentMedia.querySelector('video');
+                
+                if (currentVideo) {
+                    currentVideo.pause();
+                    currentVideo.currentTime = 0;
+                }
+
+                currentSlide = (currentSlide + 1) % galleryMedia.length;
+                updateSlides();
+            }, 5000);
         }
 
         // SCÈNE FINALE
         function showFinalScene() {
-            const finalContainer = document.createElement('div');
-            finalContainer.className = 'final-container';
-            finalContainer.innerHTML = `
-                <video class="video-background" autoplay loop muted playsinline>
-                    <source src="video.mp4" type="video/mp4">
-                </video>
-                <div class="final-overlay">
-                    <div class="chest-animation">💝</div>
-                    <div class="final-message">
-                        <h2>Moon ❤️</h2>
-                        <div class="typewriter" id="finalText"></div>
-                    </div>
-                    <button class="music-button" id="musicButton" style="display: none;" onclick="playMusic()">
-                        💗 Lancer notre musique
-                    </button>
-                </div>
-            `;
-            document.body.appendChild(finalContainer);
+            const finalScene = document.getElementById('finalScene');
+            const finalVideo = document.getElementById('finalVideo');
+            const finalMessage = document.getElementById('finalMessage');
+            const continueBtn = document.getElementById('continueBtn');
+            
+            finalScene.style.display = 'block';
+            finalVideo.play();
+            
+            const message = `Moon 🌙❤️ — Bonne Saint-Valentin,
 
-            setTimeout(() => {
-                typeWriter();
-            }, 2000);
-        }
-
-        function typeWriter() {
-            const text = `bonne saint valentin,
-
-Le 16 décembre 2023 reste gravé dans mon cœur comme l'un des plus beaux jours de ma vie.
-
-Même si la distance nous sépare aujourd'hui, elle ne change rien à ce que je ressens pour toi.
-
-Le temps passe, les kilomètres existent… mais mes sentiments restent les mêmes.
-
-Et je sais qu'un jour, on se retrouvera. ❤️
-
-Parce que certaines histoires ne s'arrêtent pas… elles patientent.
+Océane…
+Il y a des prénoms qu’on prononce différemment des autres.
+Le tien, je ne le dis pas… je le ressens.🌹
+Avant d’être mon amour, ❤️tu étais déjà ma meilleure amie. Celle avec qui je riais, celle à qui je confiais tout, celle dont la présence suffisait à rendre une journée belle. Et pendant longtemps, j’ai gardé ce secret au fond de moi — trop peur de tout perdre, trop peur que tu ne ressentes pas la même chose.
+Puis ce soir est arrivé.
+Je ne sais pas exactement comment j’ai trouvé ce courage. Mais je me souviens de chaque détail — l’atmosphère, le silence avant les mots, mon cœur qui battait trop fort. Et quand tu m’as répondu… quand tu m’as dit que toi aussi…
+Le monde entier a disparu ce soir-là.
+On a commencé quelque chose de beau. ✨Quelque chose de vrai. Mais on était jeunes, marqués par des histoires passées qui nous avaient appris à nous protéger plutôt qu’à s’ouvrir. On a eu peur. On a mal communiqué. Et j’ai pris une décision que mon cœur n’a jamais vraiment acceptée.
+La rupture.💔
+Je vis avec ce regret. Pas entièrement — parce que cette douleur m’a transformé. Elle m’a forcé à regarder en moi, à grandir, à comprendre ce qui compte vraiment. Et ce qui compte vraiment… c’est toi.
+C’est toujours toi.
+Aujourd’hui je suis à Yaoundé, tu es à Douala. Des kilomètres entre nous. Mais Moon… la distance ne m’a jamais semblé aussi petite. Parce qu’on s’est retrouvés. Et cette fois, je sais exactement ce que tu représentes pour moi.
+Tu es la femme que je veux regarder vieillir.
+Celle avec qui je veux me réveiller chaque matin.🌹✨
+Celle à qui je veux dire oui devant ceux qu’on aime.
+Certaines histoires ne meurent pas.
+Elles traversent les silences, les distances, les erreurs…
+Et elles reviennent — plus fortes, plus belles, plus vraies.
+La nôtre n’a pas fini de s’écrire.
+Je t’aime, Océane.
+Maintenant. Demain. Toujours. ❤️
 
 — Retro 💫`;
+            
+            typeWriter(message, finalMessage, 30, () => {
+                setTimeout(() => {
+                    continueBtn.style.display = 'block';
+                }, 1000);
+            });
+        }
 
-            const element = document.getElementById('finalText');
-            element.classList.add('typing');
+        function typeWriter(text, element, speed, callback) {
             let i = 0;
-
+            element.textContent = '';
             function type() {
                 if (i < text.length) {
                     element.textContent += text.charAt(i);
                     i++;
-                    setTimeout(type, 50);
-                } else {
-                    document.getElementById('musicButton').style.display = 'block';
+                    setTimeout(type, speed);
+                } else if (callback) {
+                    callback();
                 }
             }
-
             type();
         }
 
-        // Musique et animation finale
-        let audio = null;
-
-        function playMusic() {
-            if (!audio) {
-                audio = new Audio('music.mp3');
-                audio.loop = true;
-            }
-
-            audio.play().catch(err => {
-                console.log('Lecture audio bloquée:', err);
-            });
-
-            document.getElementById('musicButton').textContent = '🎵 Musique en cours...';
-            startHeartAnimation();
-        }
-
-        function startHeartAnimation() {
-            setInterval(() => {
-                createFloatingHeart();
-            }, 500);
-        }
-
-        function createFloatingHeart() {
-            const container = document.getElementById('floatingHearts');
-            const heart = document.createElement('div');
-            heart.className = 'floating-heart';
-            heart.textContent = ['💖', '💗', '💕', '💝'][Math.floor(Math.random() * 4)];
-            heart.style.left = Math.random() * 100 + '%';
-            heart.style.bottom = '-50px';
-            container.appendChild(heart);
-
-            setTimeout(() => {
-                heart.remove();
-            }, 4000);
-        }
-
-        // Initialisation
-        window.addEventListener('load', () => {
-            createBackgroundStars();
+        // Bouton continuer
+        document.getElementById('continueBtn').addEventListener('click', () => {
+            sounds.click();
+            document.getElementById('finalScene').style.display = 'none';
+            const extrasScene = document.getElementById('extrasScene');
+            extrasScene.style.display = 'block';
+            extrasScene.querySelector('video').play();
+            initGallery();
         });
 
-        // Empêcher le zoom sur double-tap
-        document.addEventListener('touchstart', function(e) {
-            if (e.touches.length > 1) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+        // MUSIQUE
+        const musicBtn = document.getElementById('musicBtn');
+        const musicPlayer = document.getElementById('musicPlayer');
+        const floatingHearts = document.getElementById('floatingHearts');
 
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function(e) {
-            const now = Date.now();
-            if (now - lastTouchEnd <= 300) {
-                e.preventDefault();
+        musicBtn.addEventListener('click', () => {
+            sounds.click();
+            musicPlayer.play();
+            musicBtn.textContent = '🎵 Musique en cours...';
+            musicBtn.disabled = true;
+            createFloatingHearts();
+        });
+
+        function createFloatingHearts() {
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = ['💗', '💖', '💝', '💕'][Math.floor(Math.random() * 4)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 2 + 3) + 's';
+                heart.style.animationDelay = Math.random() * 2 + 's';
+                floatingHearts.appendChild(heart);
+                
+                setTimeout(() => heart.remove(), 6000);
+            }, 300);
+        }
+
+        // LIVRE D'OR
+        const guestbookText = document.getElementById('guestbookText');
+        const charCount = document.getElementById('charCount');
+        const saveGuestbook = document.getElementById('saveGuestbook');
+        const savedMessage = document.getElementById('savedMessage');
+
+        guestbookText.addEventListener('input', () => {
+            charCount.textContent = guestbookText.value.length;
+        });
+
+        saveGuestbook.addEventListener('click', () => {
+            sounds.click();
+            const message = guestbookText.value.trim();
+            if (message) {
+                sounds.success();
+                localStorage.setItem('moon_guestbook', JSON.stringify({
+                    message: message,
+                    date: new Date().toISOString()
+                }));
+                
+                savedMessage.style.display = 'block';
+                saveGuestbook.textContent = 'Message sauvegardé ✅';
+                saveGuestbook.disabled = true;
+                
+                setTimeout(() => {
+                    savedMessage.style.display = 'none';
+                }, 3000);
             }
-            lastTouchEnd = now;
-        }, false);
+        });
+
+        // CAPSULE TEMPORELLE
+        const capsuleText = document.getElementById('capsuleText');
+        const capsuleCharCount = document.getElementById('capsuleCharCount');
+        const saveCapsuleText = document.getElementById('saveCapsuleText');
+        const capsuleSaved = document.getElementById('capsuleSaved');
+
+        capsuleText.addEventListener('input', () => {
+            capsuleCharCount.textContent = capsuleText.value.length;
+        });
+
+        saveCapsuleText.addEventListener('click', () => {
+            sounds.click();
+            const message = capsuleText.value.trim();
+            if (message) {
+                sounds.success();
+                localStorage.setItem('moon_capsule_text', JSON.stringify({
+                    message: message,
+                    date: new Date().toISOString()
+                }));
+                
+                capsuleSaved.style.display = 'block';
+                saveCapsuleText.textContent = 'Capsule scellée ✅';
+                saveCapsuleText.disabled = true;
+                
+                setTimeout(() => {
+                    capsuleSaved.style.display = 'none';
+                }, 3000);
+            }
+        });
     </script>
 </body>
 </html>
